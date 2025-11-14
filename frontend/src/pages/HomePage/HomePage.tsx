@@ -1,4 +1,7 @@
 import styles from "./HomePage.module.css";
+import { useAuth } from "../../context/useAuthContext";
+import { ScreenLoader } from "../../components/common/ScreenLoader/ScreenLoader";
+import { SearchForm } from "../../components/common/SearchForm/SearchForm";
 
 const LoginButton = () => {
   const BACKEND_URL =
@@ -10,17 +13,27 @@ const LoginButton = () => {
 
   return (
     <button className={styles.loginButton} onClick={handleLogin}>
-      Log via Steam
+      <img
+        src="https://community.fastly.steamstatic.com/public/images/signinthroughsteam/sits_01.png"
+        width="180"
+        height="35"
+      ></img>
     </button>
   );
 };
 
 export const HomePage = () => {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <ScreenLoader text="Verifying authentication..." />;
+  }
+
   return (
     <div className={styles.homePage}>
-      <section className={styles.loginSection}>
+      <section className={styles.mainSection}>
         <h1 className={styles.mainTitle}>AchieVault</h1>
-        <LoginButton />
+        {isAuthenticated ? <SearchForm variant="hero" /> : <LoginButton />}
       </section>
 
       <section className={styles.widgetsSection}>

@@ -29,4 +29,10 @@ export class AuthController {
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3001';
     res.redirect(`${frontendUrl}/profile`);
   }
+
+  @Get('me')
+  @UseGuards(AuthGuard('jwt'))
+  getProfile(@Req() req) {
+    return req.user;
+  }
 }

@@ -1,0 +1,90 @@
+.rankingPage {
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.rankingPage h1 {
+  text-align: center;
+  color: var(--color-text);
+  margin-top: 0;
+}
+
+.userRank {
+  margin-bottom: 30px;
+}
+
+.userRankCard {
+  background-color: var(--color-bg-widget);
+  border: 2px solid var(--color-bg-accent);
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.rankNumber {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--color-bg-accent);
+}
+
+.avatarStub {
+  width: 40px;
+  height: 40px;
+  background-color: var(--color-bg-section);
+  border-radius: 50%;
+}
+
+.userName {
+  font-weight: bold;
+  flex-grow: 1;
+}
+
+.points {
+  font-weight: 500;
+}
+
+.globalTable {
+  background-color: var(--color-bg-widget);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.table {
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.table th {
+  background-color: var(--color-bg-stub);
+}
+
+.userCell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  padding-top: 20px;
+}
+
+.pagination button {
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg-stub);
+  border-radius: 4px;
+}
