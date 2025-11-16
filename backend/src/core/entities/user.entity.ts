@@ -5,30 +5,33 @@ import {
   Index,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { UserGame } from './user-game.entity';
 
 @Entity('User')
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @Index()
+  id: number;
 
-  @Column({ unique: true })
+  @Column({ type: 'varchar', length: 17, unique: true, nullable: false })
   @Index()
   steamid: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 100, nullable: false })
   name: string;
 
-  @Column()
+  @Column({ type: 'text' })
   avatar: string;
 
-  @Column()
+  @Column({ type: 'integer', nullable: false, default: 0 })
   achievement_count: number;
 
-  @Column()
+  @Column({ type: 'integer', nullable: false, default: 0 })
   completed_count: number;
 
-  @Column()
+  @Column({ type: 'integer', nullable: false, default: 0 })
   game_count: number;
 
   @CreateDateColumn()
@@ -36,4 +39,7 @@ export class User {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @OneToMany(() => UserGame, (userGame) => userGame.game)
+  user_games: UserGame[];
 }
