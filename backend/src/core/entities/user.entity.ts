@@ -6,12 +6,13 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  BaseEntity,
 } from 'typeorm';
-import { UserGame } from './user-game.entity';
+import { UserGame } from '../../features/users/entities/user-game.entity';
 
 @Entity('User')
-export class User {
-  @PrimaryGeneratedColumn('uuid')
+export class User extends BaseEntity {
+  @PrimaryGeneratedColumn('increment')
   @Index()
   id: number;
 
@@ -40,6 +41,6 @@ export class User {
   @UpdateDateColumn()
   updated_at: Date;
 
-  @OneToMany(() => UserGame, (userGame) => userGame.game)
+  @OneToMany(() => UserGame, (userGame) => userGame.user)
   user_games: UserGame[];
 }
