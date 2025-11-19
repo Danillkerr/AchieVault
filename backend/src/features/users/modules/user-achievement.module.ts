@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { UserAchievementService } from '../service/user-achievement.service';
+import { UserAchievementService } from '../services/user-achievement.service';
 import { UserAchievementRepository } from '../repositories/abstracts/user-achievement.repository.abstract';
 import { TypeOrmUserAchievementRepository } from '../repositories/infrastructures/user-achievement.repository';
 import { UserAchievement } from 'src/features/users/entities/user-achievement.entity';

@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { UserGameService } from '../service/user-game.service';
+import { UserGameService } from '../services/user-game.service';
 import { Game } from 'src/features/game/entities/game.entity';
 import { UserGame } from 'src/features/users/entities/user-game.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';

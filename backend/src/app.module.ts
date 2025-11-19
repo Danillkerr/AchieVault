@@ -14,10 +14,44 @@ import { Achievement } from './features/game/entities/achievement.entity';
 import { UserAchievement } from './features/users/entities/user-achievement.entity';
 import { FriendList } from './features/users/entities/friendship.entity';
 import { UserProfileModule } from './features/users/user-profile.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { BullModule } from '@nestjs/bull/dist/bull.module';
+import { LeaderboardModule } from './features/leaderboard/modules/leaderboard.module';
+import { CacheModule } from '@nestjs/cache-manager';
+import { SchedulerModule } from './features/scheduler/modules/scheduler.module';
+import * as redisStore from 'cache-manager-redis-store';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    ScheduleModule.forRoot(),
+    SchedulerModule,
+
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        redis: {
+          host: config.get('REDIS_HOST'),
+          port: parseInt(config.get('REDIS_PORT') || '6379', 10),
+          password: config.get('REDIS_PASSWORD'),
+          tls: {},
+        },
+      }),
+    }),
+
+    CacheModule.registerAsync({
+      isGlobal: true,
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        store: redisStore,
+        host: config.get('REDIS_HOST'),
+        port: parseInt(config.get('REDIS_PORT') || '6379', 10),
+        auth_pass: config.get('REDIS_PASSWORD'),
+        ttl: 600,
+      }),
+    }),
 
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -45,11 +79,13 @@ import { UserProfileModule } from './features/users/user-profile.module';
     }),
 
     AuthModule,
+    LeaderboardModule,
     UserProfileModule,
     GameModule,
     SyncModule,
     SteamModule,
     IgdbModule,
+    SchedulerModule,
   ],
 
   controllers: [],

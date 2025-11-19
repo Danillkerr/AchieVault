@@ -8,6 +8,8 @@ export abstract class UserRepository {
     transactionManager?: EntityManager,
   ): Promise<User | null>;
 
+  abstract findAll(transactionManager?: EntityManager): Promise<User[]>;
+
   abstract findBySteamId(
     steamId: string,
     transactionManager?: EntityManager,

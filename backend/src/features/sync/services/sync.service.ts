@@ -5,30 +5,30 @@ import {
   ISteamOwnedGame,
 } from '../../../core/interfaces/user-source/user-source.interface';
 import { DataSource } from 'typeorm';
-import { IGame } from '../../../core/interfaces/games/game.interface';
+import { InjectQueue } from '@nestjs/bull';
+import type { Queue } from 'bull';
+import { Inject } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import type { Cache } from 'cache-manager';
 
-import { UserGameService } from '../../users/service/user-game.service';
-import { UserAchievementService } from '../../users/service/user-achievement.service';
-import { FriendListService } from '../../users/service/friend-list.service';
-import { UserStatsService } from '../../users/service/user-stats.service';
+import { IGame } from '../../../core/interfaces/games/game.interface';
+import { IGameToSync } from '../interfaces/game-to-sync.interface';
+
+import { UserGameService } from '../../users/services/user-game.service';
+import { UserAchievementService } from '../../users/services/user-achievement.service';
+import { FriendListService } from '../../users/services/friend-list.service';
+import { UserStatsService } from '../../users/services/user-stats.service';
 
 import { GameService } from '../../game/service/game.service';
 import { AchievementService } from '../../game/service/achievement.service';
 import { GameEnrichmentService } from './game-enrichment.service';
 import { UserSourceRepository } from 'src/core/repositories/user-source.repository.abstract';
 
-interface IGameToSync {
-  steam_id: string;
-  new_playtime: number;
-  userGame_id: number;
-  game_id: number;
-}
-
 @Injectable()
 export class SyncService {
-  private readonly logger = new Logger(SyncService.name);
+  private logger = new Logger(SyncService.name);
   constructor(
-    private readonly dataSource: DataSource,
+    private dataSource: DataSource,
 
     private userGameService: UserGameService,
     private userAchievementService: UserAchievementService,
@@ -40,7 +40,26 @@ export class SyncService {
 
     private userSource: UserSourceRepository,
     private gameEnrichmentService: GameEnrichmentService,
+
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    @InjectQueue('user-sync-queue') private userQueue: Queue,
   ) {}
+
+  async triggerBackgroundSync(userId: number): Promise<void> {
+    const key = `sync_cooldown:${userId}`;
+    const isCooldown = await this.cacheManager.get(key);
+
+    if (isCooldown) {
+      this.logger.log(`User ${userId} is on sync cooldown. Skipping.`);
+      return;
+    }
+
+    this.logger.log(`Triggering background sync for user ${userId}`);
+
+    await this.userQueue.add('sync-user-job', { userId });
+
+    await this.cacheManager.set(key, 'true', 1800 * 1000);
+  }
 
   async syncUser(user: User): Promise<void> {
     await this.syncUserGames(user);

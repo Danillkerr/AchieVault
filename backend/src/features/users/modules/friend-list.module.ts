@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { FriendListService } from '../service/friend-list.service';
+import { FriendListService } from '../services/friend-list.service';
 import { UserModule } from './user.module';
 import { TypeOrmModule } from '@nestjs/typeorm/dist/typeorm.module';
 import { FriendList } from 'src/features/users/entities/friendship.entity';

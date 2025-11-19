@@ -22,6 +22,10 @@ export class UsersService {
     return this.userRepository.findById(id, transactionManager);
   }
 
+  async findAll(transactionManager?: EntityManager): Promise<User[]> {
+    return this.userRepository.findAll(transactionManager);
+  }
+
   async findUsersBySteamId(
     steamIds: string[],
     transactionManager?: EntityManager,

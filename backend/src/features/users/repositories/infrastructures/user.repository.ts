@@ -26,6 +26,11 @@ export class TypeOrmUserRepository
     return manager.findOneBy(User, { id });
   }
 
+  async findAll(transactionManager?: EntityManager): Promise<User[]> {
+    const manager = this.getManager(transactionManager);
+    return manager.find(User);
+  }
+
   async findBySteamId(
     steamId: string,
     transactionManager?: EntityManager,

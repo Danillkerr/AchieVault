@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { UserStatsService } from '../service/user-stats.service';
+import { UserStatsService } from '../services/user-stats.service';
 import { UserModule } from './user.module';
 import { UserAchievementModule } from './user-achievement.module';
 
