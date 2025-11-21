@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeepPartial, EntityManager, In, Repository } from 'typeorm';
+import { DeepPartial, EntityManager, ILike, In, Repository } from 'typeorm';
 import { User } from 'src/core/entities/user.entity';
 import { UserRepository } from '../abstracts/user.repository.abstract';
 import { ISteamProfile } from '../../interfaces/steam-profile.interface';
@@ -77,5 +77,17 @@ export class TypeOrmUserRepository
   ): Promise<void> {
     const manager = this.getManager(transactionManager);
     await manager.update(User, id, data);
+  }
+
+  async searchUsers(query: string, limit: number = 10): Promise<User[]> {
+    const manager = this.getManager();
+
+    return manager.find(User, {
+      where: [{ name: ILike(`%${query}%`) }, { steamid: ILike(`${query}%`) }],
+      take: limit,
+      order: {
+        name: 'ASC',
+      },
+    });
   }
 }

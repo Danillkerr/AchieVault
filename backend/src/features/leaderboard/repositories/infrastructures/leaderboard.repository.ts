@@ -22,18 +22,16 @@ export class TypeOrmLeaderboardRepository
     const manager = this.getManager(transactionManager);
 
     const sql = `
-      INSERT INTO "Rating" (user_id, rank_completed, rank_achievement, updated_at)
+      INSERT INTO "Rating" (user_id, rank_completed, rank_achievement)
       SELECT 
         u.id,
         RANK() OVER (ORDER BY u.completed_count DESC),
-        RANK() OVER (ORDER BY u.achievement_count DESC),
-        NOW()
+        RANK() OVER (ORDER BY u.achievement_count DESC)
       FROM "User" u
       ON CONFLICT (user_id) 
       DO UPDATE SET
         rank_completed = EXCLUDED.rank_completed,
-        rank_achievement = EXCLUDED.rank_achievement,
-        updated_at = EXCLUDED.updated_at;
+        rank_achievement = EXCLUDED.rank_achievement;
     `;
 
     await manager.query(sql);
@@ -73,6 +71,15 @@ export class TypeOrmLeaderboardRepository
           achievement_count: true,
         },
       },
+    });
+  }
+
+  async getUserRank(userId: number): Promise<UserRank | null> {
+    const manager = this.getManager();
+
+    return manager.findOne(UserRank, {
+      where: { userId },
+      relations: { user: true },
     });
   }
 }

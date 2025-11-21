@@ -1,0 +1,137 @@
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+.gridUsers {
+  display: grid;
+  grid-template-columns: 1fr 80px 80px;
+  gap: 10px;
+  align-items: center;
+}
+
+.gridGames {
+  display: grid;
+  grid-template-columns: 1fr 80px;
+  gap: 10px;
+  align-items: center;
+}
+
+.tableHeader {
+  padding: 10px 15px;
+  background-color: rgba(0, 0, 0, 0.03);
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+.colRight {
+  text-align: right;
+}
+
+.colCenter {
+  text-align: center;
+}
+
+.row {
+  padding: 12px 15px;
+  border-bottom: 1px solid var(--color-border);
+  text-decoration: none;
+  color: inherit;
+  transition: background-color 0.2s;
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.row:hover {
+  background-color: var(--color-accent);
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  overflow: hidden;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.username {
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.statValue {
+  font-weight: 600;
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.gameContent {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  overflow: hidden;
+}
+
+.gameCover {
+  width: 60px;
+  height: 35px;
+  object-fit: cover;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.gameTitle {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.iconPerfect {
+  color: #3498db;
+  font-size: 0.9rem;
+}
+.iconAchiev {
+  color: #f1c40f;
+  font-size: 0.9rem;
+}
+
+.ratingHigh {
+  color: #27ae60;
+  font-weight: bold;
+}
+.ratingMid {
+  color: #f39c12;
+  font-weight: bold;
+}
+.ratingLow {
+  color: #c0392b;
+  font-weight: bold;
+}
+
+.emptyState {
+  padding: 20px;
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-style: italic;
+}

@@ -12,4 +12,6 @@ export abstract class LeaderboardRepository {
     page: number,
     limit: number,
   ): Promise<[UserRank[], number]>;
+
+  abstract getUserRank(userId: number): Promise<UserRank | null>;
 }

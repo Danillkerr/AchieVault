@@ -1,0 +1,63 @@
+.searchPage {
+  min-height: 100vh;
+  background-color: var(--color-bg-page);
+  display: flex;
+  flex-direction: column;
+}
+
+.heroSection {
+  background-color: var(--color-bg-page);
+  padding: 20px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title {
+  font-size: 1.5rem;
+  color: var(--color-text);
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.searchContainer {
+  width: 100%;
+  max-width: 500px;
+  margin-bottom: 10px;
+}
+
+.queryDisplay {
+  font-size: 1.1rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  font-style: italic;
+  margin-top: 5px;
+}
+
+.resultsSection {
+  background-color: var(--color-bg-accent);
+  flex: 1;
+  padding: 30px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  max-width: 1400px;
+  width: 100%;
+  align-items: start;
+}
+
+.widgetWrapper {
+  height: 100%;
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

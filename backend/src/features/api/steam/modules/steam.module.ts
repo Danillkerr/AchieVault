@@ -14,11 +14,16 @@ import { UserSourceRepository } from 'src/core/repositories/user-source.reposito
       useFactory: (http: HttpService, config: ConfigService) => {
         const steamApiUrl = config.get<string>('STEAM_API_URL');
         const steamApiKey = config.get<string>('STEAM_API_KEY');
+        const steamApiStoreUrl = config.get<string>('STEAM_API_STORE_URL');
 
-        if (!steamApiUrl || !steamApiKey) {
+        if (!steamApiUrl || !steamApiKey || !steamApiStoreUrl) {
           throw new Error('STEAM environment variables are not set.');
         }
-        return new SteamService(http, { steamApiUrl, steamApiKey });
+        return new SteamService(http, {
+          steamApiUrl,
+          steamApiKey,
+          steamApiStoreUrl,
+        });
       },
     },
     SteamUserSourceRepository,

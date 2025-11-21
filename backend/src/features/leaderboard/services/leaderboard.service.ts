@@ -43,4 +43,15 @@ export class LeaderboardService {
       },
     };
   }
+
+  async getUserRank(userId: number) {
+    const rank = await this.leaderboardRepo.getUserRank(userId);
+
+    if (!rank) {
+      this.logger.warn(`User rank not found for userId: ${userId}`);
+      return null;
+    }
+
+    return rank;
+  }
 }

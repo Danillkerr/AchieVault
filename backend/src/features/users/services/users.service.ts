@@ -60,4 +60,12 @@ export class UsersService {
   ): Promise<void> {
     return this.userRepository.update(id, data, transactionManager);
   }
+
+  async search(query: string): Promise<User[]> {
+    if (!query || query.trim().length < 2) {
+      return [];
+    }
+
+    return this.userRepository.searchUsers(query.trim());
+  }
 }

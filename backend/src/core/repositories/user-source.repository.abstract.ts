@@ -14,4 +14,6 @@ export abstract class UserSourceRepository {
   abstract getTopPlayedGames(limit: number): Promise<any[]>;
 
   abstract getGameSchema(appId: string): Promise<any[]>;
+
+  abstract searchGames(query: string): Promise<any[]>;
 }

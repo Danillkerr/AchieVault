@@ -17,8 +17,12 @@ export class SteamService extends BaseApiService {
     this.steamConfig = config;
   }
 
-  private async _querySteam(endpoint: string, params: any): Promise<any> {
-    const url = `${this.steamConfig.steamApiUrl}/${endpoint}`;
+  private async _querySteam(
+    endpoint: string,
+    params: any,
+    baseUrl?: string,
+  ): Promise<any> {
+    const url = `${baseUrl || this.steamConfig.steamApiUrl}/${endpoint}`;
     try {
       return await this._makeGetRequest(url, params);
     } catch (error) {
@@ -93,5 +97,20 @@ export class SteamService extends BaseApiService {
     const response = await this._querySteam(endpoint, params);
 
     return response?.game?.availableGameStats?.achievements || [];
+  }
+
+  async searchGames(query: string): Promise<any[]> {
+    const endpoint = 'storesearch/';
+    const params = { term: query, l: 'english', cc: 'US' };
+
+    const response = await this._querySteam(
+      endpoint,
+      params,
+      this.steamConfig.steamApiStoreUrl,
+    );
+
+    this.logger.log(`SearchGames response: ${JSON.stringify(response)}`);
+
+    return response?.items || [];
   }
 }

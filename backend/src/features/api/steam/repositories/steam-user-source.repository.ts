@@ -39,4 +39,8 @@ export class SteamUserSourceRepository implements UserSourceRepository {
   async getGameSchema(appId: string): Promise<any[]> {
     return this.steamApi.getGameSchema(appId);
   }
+
+  async searchGames(query: string): Promise<any[]> {
+    return this.steamApi.searchGames(query);
+  }
 }

@@ -16,11 +16,11 @@ export class GameDiscoveryController {
     return this.discoveryService.getPopularGames();
   }
 
-  //   @Get('search')
-  //   async searchGames(@Query('q') query: string) {
-  //     if (!query || query.length < 2) {
-  //       return [];
-  //     }
-  //     return this.discoveryService.searchGames(query);
-  //   }
+  @Get('search')
+  async searchGames(@Query('q') query: string) {
+    if (!query || query.length < 2) {
+      return [];
+    }
+    return this.discoveryService.searchGames(query);
+  }
 }

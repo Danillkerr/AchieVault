@@ -1,0 +1,106 @@
+.widgetContainer {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.gridTemplate {
+  display: grid;
+  grid-template-columns: 60px 1fr 120px;
+  align-items: center;
+  gap: 10px;
+}
+
+.tableHeader {
+  composes: gridTemplate;
+  padding: 12px 15px;
+  background-color: rgba(0, 0, 0, 0.03);
+  border-bottom: 1px solid var(--color-border);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.colStat {
+  text-align: right;
+}
+.colRank {
+  text-align: center;
+}
+
+.row {
+  composes: gridTemplate;
+  padding: 12px 15px;
+  border-bottom: 1px solid var(--color-border);
+  text-decoration: none;
+  color: inherit;
+  transition: background-color 0.2s;
+}
+
+.row:hover {
+  background-color: var(--color-accent);
+}
+
+.rank {
+  font-weight: bold;
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+.topRank {
+  color: #e67e22;
+  font-size: 1.1em;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  overflow: hidden;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--color-border);
+}
+
+.username {
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.statValue {
+  text-align: right;
+  font-weight: 600;
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.iconPerfect {
+  color: #3498db;
+}
+.iconAchiev {
+  color: #f1c40f;
+}
+
+.loadingState {
+  padding: 20px;
+  text-align: center;
+  color: var(--color-text-secondary);
+}

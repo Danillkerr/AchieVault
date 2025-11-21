@@ -30,4 +30,6 @@ export abstract class UserRepository {
     data: DeepPartial<User>,
     transactionManager?: EntityManager,
   ): Promise<void>;
+
+  abstract searchUsers(query: string, limit?: number): Promise<User[]>;
 }

@@ -1,6 +1,6 @@
 export interface Game {
   id: number;
-  appId: number;
+  steam_id: number;
   rating: number;
   title: string;
   summary: string;
