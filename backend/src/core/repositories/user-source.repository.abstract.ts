@@ -10,4 +10,8 @@ export abstract class UserSourceRepository {
   ): Promise<ISteamPlayerAchievement[]>;
 
   abstract getFriendIds(userId: string): Promise<string[]>;
+
+  abstract getTopPlayedGames(limit: number): Promise<any[]>;
+
+  abstract getGameSchema(appId: string): Promise<any[]>;
 }

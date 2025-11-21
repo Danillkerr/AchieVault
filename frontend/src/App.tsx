@@ -1,13 +1,13 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Header } from "./components/layout/Header/Header";
-import { HomePage } from "./pages/HomePage/HomePage";
-import { ProfilePage } from "./pages/ProfilePage/ProfilePage";
+import { HomePage } from "./features/home/HomePage";
+import { ProfilePage } from "./features/ProfilePage/ProfilePage";
 import { ProtectedRoute } from "./components/layout/ProtectedRoute/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
-import { SearchPage } from "./pages/SearchPage/SearchPage";
-import { GamePage } from "./pages/GamePage/GamePage";
-import { RoadmapPage } from "./pages/RoadmapPage/RoadmapPage";
-import { GlobalRankingPage } from "./pages/GlobalRankingPage/GlobalRankingPage";
+import { SearchPage } from "./features/SearchPage/SearchPage";
+import { GamePage } from "./features/GamePage/GamePage";
+import { RoadmapPage } from "./features/RoadmapPage/RoadmapPage";
+import { GlobalRankingPage } from "./features/GlobalRankingPage/GlobalRankingPage";
 
 function App() {
   return (

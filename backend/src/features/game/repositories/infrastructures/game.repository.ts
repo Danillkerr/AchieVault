@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager, In, Repository } from 'typeorm';
 import { Game } from 'src/features/game/entities/game.entity';
 import { IGame } from 'src/core/interfaces/games/game.interface';
 import { BaseTypeOrmRepository } from '../../../../core/repositories/base.repository';
@@ -69,5 +69,19 @@ export class TypeOrmGameRepository
       .getRawMany();
 
     return results.map((row) => row.id_from_list);
+  }
+
+  async findBySteamIds(
+    steamIds: string[],
+    transactionManager?: EntityManager,
+  ): Promise<Game[]> {
+    if (steamIds.length === 0) return [];
+    const manager = this.getManager(transactionManager);
+
+    return manager.find(Game, {
+      where: {
+        steam_id: In(steamIds),
+      },
+    });
   }
 }

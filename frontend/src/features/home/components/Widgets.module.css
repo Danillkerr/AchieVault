@@ -1,0 +1,130 @@
+.leaderboardLayout {
+  display: grid;
+  grid-template-columns: 40px 1fr 80px;
+  gap: 10px;
+  align-items: center;
+}
+
+.tableHeader {
+  composes: leaderboardLayout;
+  padding: 10px 15px;
+  background-color: rgba(0, 0, 0, 0.03);
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+.row,
+.gameRow {
+  padding: 12px 15px;
+  border-bottom: 1px solid var(--color-border);
+  transition: background-color 0.2s;
+}
+
+.row:last-child,
+.gameRow:last-child {
+  border-bottom: none;
+}
+
+.row:hover,
+.gameRow:hover {
+  background-color: var(--color-accent);
+}
+
+.row {
+  composes: leaderboardLayout;
+}
+
+.rank {
+  font-weight: bold;
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+.topRank {
+  color: #e67e22;
+  font-size: 1.1em;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.userAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid var(--color-border);
+}
+
+.username {
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.statValue {
+  text-align: right;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.gameRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.gameCover {
+  width: 60px;
+  height: 35px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.gameInfo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.gameTitle {
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.9rem;
+}
+
+.onlineCount {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.onlineDot {
+  width: 6px;
+  height: 6px;
+  background-color: #2ecc71;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.colStat {
+  text-align: right;
+}

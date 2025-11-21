@@ -1,5 +1,5 @@
 import styles from "./SearchPage.module.css";
-import { SearchForm } from "../../components/common/SearchForm/SearchForm";
+import { SearchForm } from "../../components/feedback/SearchForm/SearchForm";
 
 export const SearchPage = () => {
   return (

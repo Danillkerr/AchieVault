@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 import styles from "./Header.module.css";
 import { useAuth } from "../../../context/useAuthContext";
-import { SearchForm } from "../../common/SearchForm/SearchForm";
+import { SearchForm } from "../../feedback/SearchForm/SearchForm";
 
 export const Header = () => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
 
   return (
     <header className={styles.header}>
@@ -22,7 +22,13 @@ export const Header = () => {
         <SearchForm variant="header" />
         {!isLoading && isAuthenticated && (
           <Link to="/profile" className={styles.profileIcon}>
-            P
+            {user?.avatar && (
+              <img
+                src={user.avatar}
+                alt={user.name || "User"}
+                className={styles.avatarImage}
+              />
+            )}
           </Link>
         )}
       </div>

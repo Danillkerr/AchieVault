@@ -38,4 +38,11 @@ export class GameService {
   ): Promise<Game[]> {
     return this.gameRepository.bulkCreate(gamesData, transactionManager);
   }
+
+  async findBySteamIds(
+    steamIds: string[],
+    transactionManager?: EntityManager,
+  ): Promise<Game[]> {
+    return this.gameRepository.findBySteamIds(steamIds, transactionManager);
+  }
 }

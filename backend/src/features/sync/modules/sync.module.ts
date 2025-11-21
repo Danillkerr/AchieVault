@@ -42,6 +42,6 @@ import { LeaderboardModule } from 'src/features/leaderboard/modules/leaderboard.
     CronSyncProcessor,
     UserSyncProcessor,
   ],
-  exports: [BullModule],
+  exports: [BullModule, SyncService, GameEnrichmentService],
 })
 export class SyncModule {}

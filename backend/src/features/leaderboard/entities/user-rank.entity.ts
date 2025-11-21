@@ -25,7 +25,4 @@ export class UserRank {
 
   @Column({ type: 'int' })
   rank_achievement: number;
-
-  @UpdateDateColumn({ type: 'timestamptz' })
-  updated_at: Date;
 }

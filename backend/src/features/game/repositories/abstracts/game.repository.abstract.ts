@@ -18,4 +18,9 @@ export abstract class GameRepository {
     steamIds: string[],
     transactionManager?: EntityManager,
   ): Promise<string[]>;
+
+  abstract findBySteamIds(
+    steamIds: string[],
+    transactionManager?: EntityManager,
+  ): Promise<Game[]>;
 }

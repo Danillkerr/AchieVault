@@ -72,4 +72,26 @@ export class SteamService extends BaseApiService {
       ) || []
     );
   }
+
+  async getTopPlayedGames(limit: number = 10): Promise<any[]> {
+    const endpoint = 'ISteamChartsService/GetGamesByConcurrentPlayers/v1/';
+    const params = { key: this.steamConfig.steamApiKey };
+
+    const response = await this._querySteam(endpoint, params);
+
+    return response?.response?.ranks?.slice(0, limit).map((item: any) => ({
+      steamId: item.appid.toString(),
+      currentPlayers: item.concurrent_in_game,
+      rank: item.rank,
+    }));
+  }
+
+  async getGameSchema(appId: string): Promise<any[]> {
+    const endpoint = 'ISteamUserStats/GetSchemaForGame/v2/';
+    const params = { key: this.steamConfig.steamApiKey, appid: appId };
+
+    const response = await this._querySteam(endpoint, params);
+
+    return response?.game?.availableGameStats?.achievements || [];
+  }
 }

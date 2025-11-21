@@ -1,7 +1,7 @@
 import React from "react";
 import { useAuth } from "../../../context/useAuthContext";
 import { Navigate } from "react-router-dom";
-import { ScreenLoader } from "../../common/ScreenLoader/ScreenLoader";
+import { ScreenLoader } from "../../feedback/ScreenLoader/ScreenLoader";
 
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, isLoading } = useAuth();

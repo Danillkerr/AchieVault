@@ -1,6 +1,19 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { IGame } from 'src/core/interfaces/games/game.interface';
 import { ExternalGameRepository } from '../../../core/repositories/external-game.repository.abstract';
+import { UserSourceRepository } from 'src/core/repositories/user-source.repository.abstract';
+import { GameService } from '../../game/service/game.service';
+import { AchievementService } from '../../game/service/achievement.service';
+
+interface IAchievementDTO {
+  apiname: string;
+  achieved: number;
+  unlocktime: number;
+}
+
+interface achievementData {
+  name: string;
+}
 
 @Injectable()
 export class GameEnrichmentService {
@@ -10,6 +23,9 @@ export class GameEnrichmentService {
   constructor(
     @Inject(ExternalGameRepository)
     private readonly externalGameRepo: ExternalGameRepository,
+    private userSource: UserSourceRepository,
+    private gameService: GameService,
+    private achievementService: AchievementService,
   ) {}
 
   async enrichGames(steamIds: string[]): Promise<IGame[]> {
@@ -42,5 +58,42 @@ export class GameEnrichmentService {
 
   private _wait(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  async syncGameWithAchievements(steamId: string): Promise<void> {
+    this.logger.log(`Full sync started for game ${steamId}...`);
+
+    try {
+      const [gameData, achievementsData] = await Promise.all([
+        this.externalGameRepo.getGameDetailsBySteamId(steamId),
+        this.userSource.getGameSchema(steamId),
+      ]);
+
+      if (!gameData) {
+        this.logger.warn(`Game ${steamId} not found in external sources.`);
+        return;
+      }
+
+      const [savedGame] = await this.gameService.bulkCreateGames([gameData]);
+
+      if (achievementsData && achievementsData.length > 0) {
+        const achievementsDto: IAchievementDTO[] = achievementsData.map(
+          (ach) => ({
+            apiname: ach.name,
+            achieved: 0,
+            unlocktime: 0,
+          }),
+        );
+
+        await this.achievementService.bulkUpsertAchievements(
+          savedGame.id,
+          achievementsDto as any,
+        );
+      }
+
+      this.logger.log(`Game ${steamId} synced successfully.`);
+    } catch (e) {
+      this.logger.error(`Failed to sync game ${steamId}`, e);
+    }
   }
 }

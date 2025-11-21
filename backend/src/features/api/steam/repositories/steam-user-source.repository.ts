@@ -31,4 +31,12 @@ export class SteamUserSourceRepository implements UserSourceRepository {
   async getFriendIds(steamId: string): Promise<string[]> {
     return this.steamApi.getFriendList(steamId);
   }
+
+  async getTopPlayedGames(limit: number): Promise<any[]> {
+    return this.steamApi.getTopPlayedGames(limit);
+  }
+
+  async getGameSchema(appId: string): Promise<any[]> {
+    return this.steamApi.getGameSchema(appId);
+  }
 }

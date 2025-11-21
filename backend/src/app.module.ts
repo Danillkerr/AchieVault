@@ -3,16 +3,10 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './features/auth/modules/auth.module';
 import { ConfigService } from '@nestjs/config';
-import { User } from './core/entities/user.entity';
-import { UserGame } from './features/users/entities/user-game.entity';
-import { Game } from './features/game/entities/game.entity';
 import { SyncModule } from './features/sync/modules/sync.module';
 import { GameModule } from './features/game/modules/game.module';
 import { SteamModule } from './features/api/steam/modules/steam.module';
 import { IgdbModule } from './features/api/igdb/modules/igdb.module';
-import { Achievement } from './features/game/entities/achievement.entity';
-import { UserAchievement } from './features/users/entities/user-achievement.entity';
-import { FriendList } from './features/users/entities/friendship.entity';
 import { UserProfileModule } from './features/users/user-profile.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { BullModule } from '@nestjs/bull/dist/bull.module';
@@ -20,6 +14,7 @@ import { LeaderboardModule } from './features/leaderboard/modules/leaderboard.mo
 import { CacheModule } from '@nestjs/cache-manager';
 import { SchedulerModule } from './features/scheduler/modules/scheduler.module';
 import * as redisStore from 'cache-manager-redis-store';
+import { GameDiscoveryModule } from './features/game-discovery/modules/game-discovery.module';
 
 @Module({
   imports: [
@@ -65,14 +60,7 @@ import * as redisStore from 'cache-manager-redis-store';
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
 
-        entities: [
-          User,
-          UserGame,
-          Game,
-          UserAchievement,
-          Achievement,
-          FriendList,
-        ],
+        autoLoadEntities: true,
 
         ssl: true,
       }),
@@ -85,6 +73,7 @@ import * as redisStore from 'cache-manager-redis-store';
     SyncModule,
     SteamModule,
     IgdbModule,
+    GameDiscoveryModule,
     SchedulerModule,
   ],
 
