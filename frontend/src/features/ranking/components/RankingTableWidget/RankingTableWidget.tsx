@@ -5,7 +5,6 @@ import { Pagination } from "../../../../components/ui/Pagination/Pagination";
 import type { LeaderboardUser } from "../../../../types/user.interface";
 import type { PaginatedResponse } from "../../../../types/pagination.interface";
 import styles from "./RankingTableWidget.module.css";
-import { Link } from "react-router-dom";
 
 interface Props {
   title: string;
@@ -34,7 +33,6 @@ export const RankingTableWidget = ({ title, metric }: Props) => {
           },
         });
 
-        console.log("Fetched ranking data:", response.data);
         setData(response.data.data);
         setTotalPages(response.data.meta.totalPages);
       } catch (error) {
@@ -80,11 +78,7 @@ export const RankingTableWidget = ({ title, metric }: Props) => {
             const realRank = (page - 1) * ITEMS_PER_PAGE + index + 1;
 
             return (
-              <Link
-                key={user.id}
-                to={`/profile/${user.id}`}
-                className={styles.row}
-              >
+              <div key={user.id} className={styles.row}>
                 <span
                   className={`${styles.rank} ${
                     realRank <= 3 ? styles.topRank : ""
@@ -103,7 +97,7 @@ export const RankingTableWidget = ({ title, metric }: Props) => {
                 </div>
 
                 {renderMetricValue(user)}
-              </Link>
+              </div>
             );
           })
         )}

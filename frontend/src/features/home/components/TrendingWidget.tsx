@@ -16,9 +16,9 @@ export const TrendingWidget = ({ games }: Props) => {
           if (game.title !== "Unknown Title") {
             return (
               <Link
-                key={game.id}
+                key={game.steam_id}
                 className={styles.gameRow}
-                to={`/game/${game.id}`}
+                to={`/game/${game.steam_id}`}
               >
                 <img
                   src={

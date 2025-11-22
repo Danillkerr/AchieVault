@@ -79,4 +79,26 @@ export class TypeOrmUserAchievementRepository
 
     return parseInt(result.completed_games_count, 10) || 0;
   }
+
+  async findAchievementByGame(
+    userId: number,
+    steamId: string,
+    transactionManager?: EntityManager,
+  ): Promise<UserAchievement[]> {
+    const manager = this.getManager(transactionManager);
+
+    return manager.find(UserAchievement, {
+      where: {
+        user: { id: userId },
+        achievement: {
+          game: {
+            steam_id: steamId,
+          },
+        },
+      },
+      relations: {
+        achievement: true,
+      },
+    });
+  }
 }

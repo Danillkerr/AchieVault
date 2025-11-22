@@ -39,8 +39,6 @@ export const UserRankBanner = () => {
 
   if (!ranks) return null;
 
-  console.log("User Ranks:", ranks);
-
   return (
     <div className={styles.banner}>
       <div className={styles.profileSection}>

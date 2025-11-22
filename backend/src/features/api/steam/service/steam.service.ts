@@ -109,8 +109,16 @@ export class SteamService extends BaseApiService {
       this.steamConfig.steamApiStoreUrl,
     );
 
-    this.logger.log(`SearchGames response: ${JSON.stringify(response)}`);
-
     return response?.items || [];
+  }
+
+  async getGlobalAchievementPercentages(appId: string): Promise<any[]> {
+    const endpoint =
+      'ISteamUserStats/GetGlobalAchievementPercentagesForApp/v2/';
+    const params = { gameid: appId };
+
+    const response = await this._querySteam(endpoint, params);
+
+    return response?.achievementpercentages?.achievements || [];
   }
 }

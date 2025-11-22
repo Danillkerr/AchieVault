@@ -1,0 +1,129 @@
+.achievementRow {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+
+  background-color: var(--color-bg-card);
+  padding: 16px 20px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.achievementRow:not(.locked):hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--color-border-hover);
+}
+
+.locked {
+  background-color: rgba(255, 255, 255, 0.5);
+  border: 1px dashed var(--color-border);
+  box-shadow: none;
+}
+
+.locked .achievementIcon {
+  filter: grayscale(100%);
+  opacity: 0.6;
+}
+
+.locked .achievementTitle {
+  color: var(--color-text-secondary);
+}
+
+.achievementIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  background: var(--color-bg-page);
+  flex-shrink: 0;
+  border: 1px solid var(--color-border);
+}
+
+.achievementInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.topRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.achievementTitle {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--color-text-main);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.achievementDesc {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+.percentBadge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  background-color: var(--color-bg-section);
+  color: var(--color-text-secondary);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  white-space: nowrap;
+}
+
+.hiddenBadge {
+  font-size: 0.7rem;
+  background-color: var(--color-warning);
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.unlockDate {
+  font-size: 0.8rem;
+  color: var(--color-success);
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+}
+
+.unlockDate::before {
+  content: "✔";
+  margin-right: 4px;
+  font-size: 1rem;
+}
+
+@media (max-width: 600px) {
+  .achievementRow {
+    padding: 12px;
+    gap: 15px;
+  }
+
+  .achievementIcon {
+    width: 50px;
+    height: 50px;
+  }
+
+  .achievementTitle {
+    font-size: 1rem;
+  }
+}

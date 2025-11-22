@@ -4,6 +4,7 @@ import { UserAchievementRepository } from '../repositories/abstracts/user-achiev
 import { TypeOrmUserAchievementRepository } from '../repositories/infrastructures/user-achievement.repository';
 import { UserAchievement } from 'src/features/users/entities/user-achievement.entity';
 import { TypeOrmModule } from '@nestjs/typeorm/dist/typeorm.module';
+import { UserAchievementController } from '../controller/user-achievement.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([UserAchievement])],
@@ -16,5 +17,6 @@ import { TypeOrmModule } from '@nestjs/typeorm/dist/typeorm.module';
     },
   ],
   exports: [UserAchievementService, UserAchievementRepository],
+  controllers: [UserAchievementController],
 })
 export class UserAchievementModule {}

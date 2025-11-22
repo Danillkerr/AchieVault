@@ -1,60 +1,112 @@
 .homePage {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
 }
 
-.mainSection {
-  background-color: var(--color-bg-widget);
+.heroSection {
+  background: linear-gradient(180deg, #eef2f5 0%, #e2e8f0 100%);
+  padding: 80px 20px 60px;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 60px 20px;
+  text-align: center;
+
+  border-bottom: 1px solid var(--color-border);
 }
 
 .mainTitle {
-  font-size: 2.5rem;
-  color: var(--color-text);
-  margin-top: 0;
-  flex-grow: 1;
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: var(--color-text-main);
+  margin-bottom: 20px;
+  line-height: 1.1;
+  letter-spacing: -1px;
+}
+
+.subTitle {
+  font-size: 1.2rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 40px;
+  max-width: 600px;
+}
+
+.actionArea {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.loginButton {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: transform var(--transition-fast);
+}
+
+.loginButton:hover {
+  transform: scale(1.05);
 }
 
 .widgetsSection {
   background-color: var(--color-bg-accent);
-  flex-grow: 1;
+  flex: 1;
 
+  padding: 60px 20px;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
-  padding: 40px 20px;
-  gap: 20px;
+  justify-content: center;
 }
 
-.loginButton {
-  border: 0;
-  border-radius: 8px;
-  cursor: pointer;
-}
+.widgetsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
 
-.widget {
-  background-color: var(--color-bg-widget);
-  border-radius: 8px;
-  padding: 20px;
   width: 100%;
-  max-width: 400px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-width: var(--container-width);
+
+  align-items: start;
 }
 
-.widget h2 {
-  margin-top: 0;
-  border-bottom: 1px solid var(--color-border);
-  padding-bottom: 10px;
-  color: var(--color-text);
+.widgetWrapper {
+  height: 500px;
+  display: flex;
+  flex-direction: column;
 }
 
-.stubList {
-  padding-top: 10px;
-  font-style: italic;
-  color: var(--color-text-secondary);
+@media (max-width: 1024px) {
+  .widgetsGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .widgetWrapper:nth-child(3) {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .heroSection {
+    padding: 60px 20px;
+  }
+
+  .mainTitle {
+    font-size: 2.5rem;
+  }
+
+  .widgetsGrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .widgetWrapper:nth-child(3) {
+    grid-column: span 1;
+  }
+
+  .widgetWrapper {
+    height: auto;
+    min-height: 400px;
+  }
 }

@@ -41,4 +41,16 @@ export class UserAchievementService {
       transactionManager,
     );
   }
+
+  async getUserProgress(
+    userId: number,
+    steamId: string,
+    transactionManager?: EntityManager,
+  ): Promise<any[]> {
+    return this.userAchievementRepo.findAchievementByGame(
+      userId,
+      steamId,
+      transactionManager,
+    );
+  }
 }

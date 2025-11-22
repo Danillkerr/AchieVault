@@ -1,112 +1,130 @@
-.leaderboardLayout {
+.listItem {
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--color-border);
+  background-color: #fff;
+  transition: background-color var(--transition-fast);
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  display: block;
+}
+
+.listItem:last-child {
+  border-bottom: none;
+}
+
+.listItem:hover {
+  background-color: #f8f9fa;
+}
+
+.leaderboardGrid {
   display: grid;
   grid-template-columns: 40px 1fr 80px;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
 }
 
 .tableHeader {
-  composes: leaderboardLayout;
-  padding: 10px 15px;
-  background-color: rgba(0, 0, 0, 0.03);
+  display: grid;
+  grid-template-columns: 40px 1fr 80px;
+  gap: 12px;
+  align-items: center;
+
+  padding: 10px 20px;
+  background-color: #f8f9fa;
   border-bottom: 1px solid var(--color-border);
-  font-size: 0.85rem;
+
+  font-size: 0.8rem;
+  font-weight: 700;
   color: var(--color-text-secondary);
-  font-weight: 600;
-}
-
-.row,
-.gameRow {
-  padding: 12px 15px;
-  border-bottom: 1px solid var(--color-border);
-  transition: background-color 0.2s;
-}
-
-.row:last-child,
-.gameRow:last-child {
-  border-bottom: none;
-}
-
-.row:hover,
-.gameRow:hover {
-  background-color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .row {
-  composes: leaderboardLayout;
+  composes: listItem;
+  composes: leaderboardGrid;
 }
 
 .rank {
-  font-weight: bold;
+  font-weight: 700;
   color: var(--color-text-secondary);
   text-align: center;
+  font-variant-numeric: tabular-nums;
 }
 
 .topRank {
-  color: #e67e22;
-  font-size: 1.1em;
+  color: var(--color-warning);
+  font-size: 1.1rem;
 }
 
 .userInfo {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   overflow: hidden;
 }
 
 .userAvatar {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
   border: 1px solid var(--color-border);
+  background-color: var(--color-bg-page);
 }
 
 .username {
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--color-text-main);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 0.95rem;
 }
 
 .statValue {
   text-align: right;
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--color-text-main);
+  font-variant-numeric: tabular-nums;
+}
+
+.colStat {
+  text-align: right;
 }
 
 .gameRow {
+  composes: listItem;
   display: flex;
   align-items: center;
-  gap: 12px;
-
-  text-decoration: none;
-  color: inherit;
-  cursor: pointer;
+  gap: 16px;
 }
 
 .gameCover {
-  width: 60px;
-  height: 35px;
+  width: 70px;
+  height: 32px;
   object-fit: cover;
   border-radius: 4px;
+  background-color: var(--color-text-secondary);
 }
 
 .gameInfo {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  flex: 1;
 }
 
 .gameTitle {
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--color-text-main);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
+  line-height: 1.2;
 }
 
 .onlineCount {
@@ -115,16 +133,14 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  margin-top: 2px;
 }
 
 .onlineDot {
-  width: 6px;
-  height: 6px;
-  background-color: #2ecc71;
+  width: 8px;
+  height: 8px;
+  background-color: var(--color-success);
   border-radius: 50%;
   display: inline-block;
-}
-
-.colStat {
-  text-align: right;
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
 }

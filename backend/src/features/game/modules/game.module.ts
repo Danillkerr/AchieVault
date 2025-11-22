@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Game } from 'src/features/game/entities/game.entity';
 import { TypeOrmGameRepository } from '../repositories/infrastructures/game.repository';
 import { GameRepository } from '../repositories/abstracts/game.repository.abstract';
+import { GameController } from '../controllers/game.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Game])],
@@ -16,5 +17,6 @@ import { GameRepository } from '../repositories/abstracts/game.repository.abstra
     },
   ],
   exports: [GameService, GameRepository],
+  controllers: [GameController],
 })
 export class GameModule {}

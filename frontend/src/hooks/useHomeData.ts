@@ -32,8 +32,6 @@ export const useHomeData = () => {
         const achievData = await achievRes.json();
         const gamesData = await gamesRes.json();
 
-        console.log(perfectData, achievData, gamesData);
-
         setTopPerfectUsers(perfectData);
         setTopAchievUsers(achievData);
         setTrendingGames(gamesData);

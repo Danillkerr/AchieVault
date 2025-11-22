@@ -39,28 +39,35 @@ export const HomePage = () => {
 
   return (
     <div className={styles.homePage}>
-      <section className={styles.mainSection}>
+      <section className={styles.heroSection}>
         <h1 className={styles.mainTitle}>AchieVault</h1>
-        {isAuthenticated ? <SearchForm variant="hero" /> : <LoginButton />}
+        <p className={styles.subTitle}>
+          Track your achievements, compete with friends, complete games.
+        </p>
+        <div className={styles.actionArea}>
+          {isAuthenticated ? <SearchForm variant="hero" /> : <LoginButton />}
+        </div>
       </section>
 
       <section className={styles.widgetsSection}>
-        <div className={styles.widgetWrapper}>
-          <LeaderboardWidget
-            title="Completionists (100%)"
-            users={topPerfectUsers}
-            metric="perfect"
-          />
-        </div>
-        <div className={styles.widgetWrapper}>
-          <LeaderboardWidget
-            title="Achievement Hunters"
-            users={topAchievUsers}
-            metric="total"
-          />
-        </div>
-        <div className={styles.widgetWrapper}>
-          <TrendingWidget games={trendingGames} />
+        <div className={styles.widgetsGrid}>
+          <div className={styles.widgetWrapper}>
+            <LeaderboardWidget
+              title="Completionists"
+              users={topPerfectUsers}
+              metric="perfect"
+            />
+          </div>
+          <div className={styles.widgetWrapper}>
+            <LeaderboardWidget
+              title="Hunters"
+              users={topAchievUsers}
+              metric="total"
+            />
+          </div>
+          <div className={styles.widgetWrapper}>
+            <TrendingWidget games={trendingGames} />
+          </div>
         </div>
       </section>
     </div>

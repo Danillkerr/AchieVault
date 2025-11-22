@@ -25,12 +25,22 @@ import { LeaderboardModule } from 'src/features/leaderboard/modules/leaderboard.
           max: 1,
           duration: 1100,
         },
+        settings: {
+          stalledInterval: 300000,
+          retryProcessDelay: 60000,
+          guardInterval: 300000,
+          maxStalledCount: 1,
+        },
       },
       {
         name: 'user-sync-queue',
         limiter: {
           max: 1,
           duration: 1100,
+        },
+        settings: {
+          stalledInterval: 300000,
+          guardInterval: 300000,
         },
       },
     ),

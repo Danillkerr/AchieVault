@@ -5,7 +5,7 @@ import { ProfilePage } from "./features/ProfilePage/ProfilePage";
 import { ProtectedRoute } from "./components/layout/ProtectedRoute/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
 import { SearchPage } from "./features/search/SearchPage";
-import { GamePage } from "./features/GamePage/GamePage";
+import { GamePage } from "./features/game/GamePage";
 import { RoadmapPage } from "./features/RoadmapPage/RoadmapPage";
 import { GlobalRankingPage } from "./features/ranking/GlobalRankingPage";
 

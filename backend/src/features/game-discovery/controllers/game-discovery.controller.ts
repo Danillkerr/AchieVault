@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Param,
   Query,
   UsePipes,
   ValidationPipe,
@@ -22,5 +23,10 @@ export class GameDiscoveryController {
       return [];
     }
     return this.discoveryService.searchGames(query);
+  }
+
+  @Get(':steamId/achievements/global')
+  async getGlobalAchievements(@Param('steamId') steamId: string) {
+    return this.discoveryService.getGameAchievementsWithGlobalStats(steamId);
   }
 }

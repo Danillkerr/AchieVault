@@ -16,4 +16,10 @@ export abstract class UserAchievementRepository {
     userId: number,
     transactionManager?: EntityManager,
   ): Promise<number>;
+
+  abstract findAchievementByGame(
+    userId: number,
+    steamId: string,
+    transactionManager?: EntityManager,
+  ): Promise<any[]>;
 }

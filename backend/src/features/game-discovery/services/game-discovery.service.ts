@@ -2,6 +2,9 @@ import { Injectable, Logger } from '@nestjs/common';
 import { GameService } from '../../game/service/game.service';
 import { GameEnrichmentService } from '../../sync/services/game-enrichment.service';
 import { UserSourceRepository } from '../../../core/repositories/user-source.repository.abstract';
+import { Inject } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import type { Cache } from 'cache-manager';
 
 @Injectable()
 export class GameDiscoveryService {
@@ -12,6 +15,7 @@ export class GameDiscoveryService {
     private userSource: UserSourceRepository,
     private readonly gameService: GameService,
     private readonly enrichmentService: GameEnrichmentService,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
 
   async getPopularGames() {
@@ -34,7 +38,6 @@ export class GameDiscoveryService {
     const missingIds = await this.gameService.findNewSteamIds(steamIds);
 
     if (missingIds.length > 0) {
-      this.logger.log(`Syncing ${missingIds.length} missing games...`);
       for (const id of missingIds) {
         await this.enrichmentService.syncGameWithAchievements(id);
 
@@ -43,8 +46,6 @@ export class GameDiscoveryService {
     }
 
     const allDbGames = await this.gameService.findBySteamIds(steamIds);
-
-    this.logger.log('games:', allDbGames);
 
     return sourceList.map((stat) => {
       const dbGame = allDbGames.find(
@@ -60,5 +61,35 @@ export class GameDiscoveryService {
 
   private _wait(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  async getGameAchievementsWithGlobalStats(steamId: string) {
+    const cacheKey = `achievements_global:${steamId}`;
+
+    const cached = await this.cacheManager.get(cacheKey);
+    if (cached) return cached;
+
+    const [schema, globalStats] = await Promise.all([
+      this.userSource.getGameSchema(steamId),
+      this.userSource.getAchievementPercentages(steamId),
+    ]);
+
+    if (!schema || schema.length === 0) return [];
+
+    const statsMap = new Map(globalStats.map((s) => [s.name, s.percent]));
+
+    const result = schema.map((ach) => ({
+      apiName: ach.name,
+      displayName: ach.displayName,
+      description: ach.description,
+      icon: ach.icon,
+      iconGray: ach.icongray,
+      hidden: ach.hidden,
+      globalPercent: statsMap.get(ach.name) || 0,
+    }));
+
+    await this.cacheManager.set(cacheKey, result, 3600 * 24000);
+
+    return result;
   }
 }
