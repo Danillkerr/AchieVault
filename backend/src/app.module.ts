@@ -15,6 +15,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { SchedulerModule } from './features/scheduler/modules/scheduler.module';
 import * as redisStore from 'cache-manager-redis-store';
 import { GameDiscoveryModule } from './features/game-discovery/modules/game-discovery.module';
+import { GuideModule } from './features/guide/module/guide.module';
 
 @Module({
   imports: [
@@ -75,6 +76,7 @@ import { GameDiscoveryModule } from './features/game-discovery/modules/game-disc
     IgdbModule,
     GameDiscoveryModule,
     SchedulerModule,
+    GuideModule,
   ],
 
   controllers: [],

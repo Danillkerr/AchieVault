@@ -1,0 +1,93 @@
+.guideHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.guideHeader h3 {
+  margin: 0;
+  color: var(--color-text-main);
+  font-size: 1.5rem;
+}
+
+.guideList {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.guideCard {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.guideCard:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--color-accent-primary);
+}
+
+.myGuideCard {
+  border-left: 4px solid var(--color-accent-primary);
+  background-color: #fcfaff;
+}
+
+.guideCardContent {
+  margin-bottom: 10px;
+}
+
+.guideTitle {
+  margin: 0 0 8px 0;
+  font-size: 1.2rem;
+  color: var(--color-text-main);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.myBadge {
+  display: inline-block;
+  font-size: 0.6rem;
+  background-color: var(--color-accent-primary);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  vertical-align: middle;
+  font-weight: 700;
+}
+
+.guideMeta {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  display: flex;
+  gap: 8px;
+}
+
+.createBtn {
+  background-color: var(--color-accent-primary);
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.createBtn:hover {
+  background-color: var(--color-accent-hover);
+}
+
+.placeholder {
+  text-align: center;
+  padding: 40px;
+  color: var(--color-text-secondary);
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: var(--radius-md);
+}

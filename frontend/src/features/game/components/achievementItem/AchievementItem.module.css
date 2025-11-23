@@ -1,0 +1,126 @@
+.achievementRow {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  
+  background-color: var(--color-bg-card);
+  padding: 16px 20px;
+  
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md, 12px);
+  box-shadow: var(--shadow-card);
+  
+  position: relative;
+  overflow: hidden;
+  transition: all var(--transition-fast, 0.2s);
+}
+
+.achievementRow:not(.locked):hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--color-border-hover);
+}
+
+.locked {
+  background-color: rgba(255, 255, 255, 0.5);
+  border-style: dashed;
+  box-shadow: none;
+}
+
+.locked .achievementIcon {
+  filter: grayscale(100%);
+  opacity: 0.6;
+}
+
+.locked .achievementTitle,
+.locked .achievementDesc {
+  color: var(--color-text-secondary);
+}
+
+.achievementIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-sm, 6px);
+  object-fit: cover;
+  flex-shrink: 0;
+  
+  background-color: var(--color-bg-page);
+  border: 1px solid var(--color-border);
+}
+
+.achievementInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.topRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.achievementTitle {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--color-text-main);
+}
+
+.achievementDesc {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: var(--color-text-secondary);
+}
+
+.percentBadge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  
+  background-color: var(--color-bg-section);
+  color: var(--color-text-secondary);
+  
+  padding: 2px 8px;
+  border-radius: var(--radius-sm, 4px);
+  border: 1px solid var(--color-border);
+  
+  white-space: nowrap;
+}
+
+.unlockDate {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-success, #22c55e);
+  
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.unlockDate::before {
+  content: "✔";
+  font-size: 1rem;
+  line-height: 1;
+}
+
+@media (max-width: 600px) {
+  .achievementRow {
+    padding: 12px;
+    gap: 15px;
+  }
+
+  .achievementIcon {
+    width: 50px;
+    height: 50px;
+  }
+
+  .achievementTitle {
+    font-size: 1rem;
+  }
+}
