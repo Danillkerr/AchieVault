@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Header } from "./components/layout/Header/Header";
 import { HomePage } from "./features/home/HomePage";
-import { ProfilePage } from "./features/ProfilePage/ProfilePage";
+import { ProfilePage } from "./features/profile/ProfilePage";
 import { ProtectedRoute } from "./components/layout/ProtectedRoute/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
 import { SearchPage } from "./features/search/SearchPage";

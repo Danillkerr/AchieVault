@@ -18,4 +18,9 @@ export abstract class UserSourceRepository {
   abstract searchGames(query: string): Promise<any[]>;
 
   abstract getAchievementPercentages(appId: string): Promise<any>;
+
+  abstract getRecentlyPlayedGames(
+    userId: string,
+    limit: number,
+  ): Promise<any[]>;
 }

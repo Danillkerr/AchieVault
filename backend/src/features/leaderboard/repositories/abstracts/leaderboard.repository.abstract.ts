@@ -14,4 +14,6 @@ export abstract class LeaderboardRepository {
   ): Promise<[UserRank[], number]>;
 
   abstract getUserRank(userId: number): Promise<UserRank | null>;
+
+  abstract getFriendsRank(userId: number): Promise<UserRank[]>;
 }

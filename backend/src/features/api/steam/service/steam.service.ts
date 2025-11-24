@@ -121,4 +121,27 @@ export class SteamService extends BaseApiService {
 
     return response?.achievementpercentages?.achievements || [];
   }
+
+  async getRecentlyPlayedGames(
+    steamId: string,
+    limit: number = 5,
+  ): Promise<any[]> {
+    const endpoint = 'IPlayerService/GetRecentlyPlayedGames/v1/';
+    const params = {
+      key: this.steamConfig.steamApiKey,
+      steamid: steamId,
+      count: limit,
+    };
+
+    const response = await this._querySteam(endpoint, params);
+
+    return (
+      response?.response?.games?.map((game: any) => ({
+        steamId: game.appid.toString(),
+        name: game.name,
+        playtime_2weeks: game.playtime_2weeks,
+        playtime_forever: game.playtime_forever,
+      })) || []
+    );
+  }
 }

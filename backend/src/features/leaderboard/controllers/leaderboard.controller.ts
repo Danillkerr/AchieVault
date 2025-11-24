@@ -30,4 +30,9 @@ export class LeaderboardController {
   async getUserRank(@Param('id', ParseIntPipe) id: number) {
     return this.leaderboardService.getUserRank(id);
   }
+
+  @Get('friends/:userId')
+  async getFriendsLeaderboard(@Param('userId', ParseIntPipe) userId: number) {
+    return this.leaderboardService.getFriendsLeaderboard(userId);
+  }
 }

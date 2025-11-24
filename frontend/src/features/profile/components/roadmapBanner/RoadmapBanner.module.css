@@ -1,0 +1,151 @@
+.roadmapContainer {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 20px;
+  align-items: center;
+
+  background: linear-gradient(90deg, #9da6b6 0%, #b0b8c6 100%);
+  color: #333;
+
+  padding: 25px 30px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  margin-bottom: 40px;
+  text-decoration: none;
+  transition: transform 0.2s;
+}
+
+.roadmapContainer:hover {
+  transform: translateY(-3px);
+}
+
+.roadmapCover {
+  width: 70px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  transition: transform 0.2s;
+}
+
+.roadmapContainer:hover .roadmapCover {
+  transform: scale(1.05) rotate(-3deg);
+}
+
+.roadmapLeft {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.roadmapInfo {
+  flex: 1;
+}
+.roadmapTitle {
+  margin: 0 0 10px 0;
+  font-size: 1.5rem;
+  color: #222;
+  font-weight: 800;
+}
+
+.progressWrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.progressBar {
+  flex: 1;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.progressFill {
+  height: 100%;
+  background-color: #27ae60;
+  border-radius: 4px;
+}
+.progressText {
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.roadmapStats {
+  display: flex;
+  justify-content: space-around;
+  background: rgba(255, 255, 255, 0.4);
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.rStat {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+.rsLabel {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: #555;
+  font-weight: 600;
+}
+.rsValue {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.roadmapRight {
+  background: rgba(255, 255, 255, 0.4);
+  padding: 12px 15px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.recommendBox {
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding-bottom: 5px;
+}
+.recLabel {
+  font-size: 0.75rem;
+  color: #444;
+}
+.recGameName {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+.miniStatus {
+  font-size: 0.75rem;
+  color: #444;
+  display: flex;
+  gap: 10px;
+}
+
+.emptyRoadmap {
+  background: #fff;
+  border: 2px dashed var(--color-border);
+  color: var(--color-text-main);
+  justify-content: center;
+  text-align: center;
+  box-shadow: none;
+  display: flex;
+}
+.createFakeBtn {
+  background: var(--color-accent-primary);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  margin-top: 10px;
+  display: inline-block;
+}
+
+@media (max-width: 900px) {
+  .roadmapContainer {
+    grid-template-columns: 1fr;
+  }
+}

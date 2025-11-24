@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Param,
+  ParseIntPipe,
   Query,
   UsePipes,
   ValidationPipe,
@@ -28,5 +29,10 @@ export class GameDiscoveryController {
   @Get(':steamId/achievements/global')
   async getGlobalAchievements(@Param('steamId') steamId: string) {
     return this.discoveryService.getGameAchievementsWithGlobalStats(steamId);
+  }
+
+  @Get(':id/games/recent')
+  async getRecentGames(@Param('id', ParseIntPipe) id: number) {
+    return this.discoveryService.getUserRecentGames(id);
   }
 }

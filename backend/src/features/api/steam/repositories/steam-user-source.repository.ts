@@ -47,4 +47,8 @@ export class SteamUserSourceRepository implements UserSourceRepository {
   async getAchievementPercentages(appId: string): Promise<any> {
     return this.steamApi.getGlobalAchievementPercentages(appId);
   }
+
+  async getRecentlyPlayedGames(steamId: string, limit: number): Promise<any[]> {
+    return this.steamApi.getRecentlyPlayedGames(steamId, limit);
+  }
 }

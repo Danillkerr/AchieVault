@@ -82,4 +82,22 @@ export class TypeOrmLeaderboardRepository
       relations: { user: true },
     });
   }
+
+  async getFriendsRank(userId: number): Promise<UserRank[]> {
+    const manager = this.getManager();
+
+    const qb = manager
+      .createQueryBuilder(UserRank, 'rank')
+      .leftJoinAndSelect('rank.user', 'user')
+      .leftJoin(
+        'FriendList',
+        'friend',
+        '(friend.user_id = :userId AND friend.friend_id = rank.user_id) OR ' +
+          '(friend.friend_id = :userId AND friend.user_id = rank.user_id)',
+        { userId },
+      )
+      .where('friend.id IS NOT NULL OR rank.user_id = :userId', { userId });
+
+    return qb.getMany();
+  }
 }

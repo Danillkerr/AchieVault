@@ -54,4 +54,27 @@ export class LeaderboardService {
 
     return rank;
   }
+
+  async getFriendsLeaderboard(userId: number) {
+    const ranks = await this.leaderboardRepo.getFriendsRank(userId);
+
+    const friends_perfect = [...ranks]
+      .sort((a, b) => b.user.completed_count - a.user.completed_count)
+      .map((r, index) => ({
+        id: r.id,
+        rank: index + 1,
+        value: r.user.completed_count,
+        user: r.user,
+      }));
+    const friends_achievements = [...ranks]
+      .sort((a, b) => b.user.achievement_count - a.user.achievement_count)
+      .map((r, index) => ({
+        id: r.id,
+        rank: index + 1,
+        value: r.user.achievement_count,
+        user: r.user,
+      }));
+
+    return { friends_perfect, friends_achievements };
+  }
 }
