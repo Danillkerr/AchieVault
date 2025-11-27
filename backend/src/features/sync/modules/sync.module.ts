@@ -10,6 +10,7 @@ import { BullModule } from '@nestjs/bull/dist/bull.module';
 import { CronSyncProcessor } from '../processors/cron-sync.processor';
 import { UserSyncProcessor } from '../processors/user-sync.processor';
 import { LeaderboardModule } from 'src/features/leaderboard/modules/leaderboard.module';
+import { RoadmapModule } from 'src/features/roadmap/modules/roadmap.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { LeaderboardModule } from 'src/features/leaderboard/modules/leaderboard.
     SteamModule,
     IgdbModule,
     LeaderboardModule,
+    RoadmapModule,
     BullModule.registerQueue(
       {
         name: 'cron-sync-queue',

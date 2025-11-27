@@ -6,6 +6,7 @@ import type {
   CreateGuideDto,
   GuidesResponse,
 } from "../types/guide.interface";
+import { toast } from "react-hot-toast";
 
 export const useGameGuides = (gameId: string | undefined) => {
   const { user } = useAuth();
@@ -26,9 +27,9 @@ export const useGameGuides = (gameId: string | undefined) => {
       });
       setGuides(res.data.data);
       setTotalPages(res.data.meta.totalPages);
-      console.log("Fetched guides:", res.data.data);
     } catch (error) {
       console.error("Failed to fetch guides", error);
+      toast.error("Could not load guides");
     } finally {
       setIsLoading(false);
     }
@@ -40,27 +41,32 @@ export const useGameGuides = (gameId: string | undefined) => {
 
   const createGuide = async (data: CreateGuideDto) => {
     if (!gameId) return;
-    console.log("Creating guide with data:", data);
+    const toastId = toast.loading("Publishing guide...");
     await apiClient.post(`/guides/`, data);
     setPage(1);
     await fetchGuides();
+    toast.success("Guide published successfully!", { id: toastId });
   };
 
   const updateGuide = async (
     guideId: number,
     inputData: Pick<CreateGuideDto, "title" | "text">
   ) => {
+    const toastId = toast.loading("Updating guide...");
     await apiClient.put(`/guides/${guideId}`, {
       title: inputData.title,
       text: inputData.text,
     });
     await fetchGuides();
+    toast.success("Guide updated successfully!", { id: toastId });
   };
 
   const deleteGuide = async (guideId: number) => {
     if (!window.confirm("Are you sure you want to delete this guide?")) return;
+    const toastId = toast.loading("Deleting guide...");
     await apiClient.delete(`/guides/${guideId}`);
     await fetchGuides();
+    toast.success("Guide deleted successfully!", { id: toastId });
   };
 
   return {

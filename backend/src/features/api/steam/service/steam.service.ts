@@ -26,7 +26,7 @@ export class SteamService extends BaseApiService {
     try {
       return await this._makeGetRequest(url, params);
     } catch (error) {
-      return undefined;
+      return `Error querying Steam API: ${error}`;
     }
   }
 
@@ -55,6 +55,7 @@ export class SteamService extends BaseApiService {
       appid: appId,
       format: 'json',
     };
+
     const response = await this._querySteam(endpoint, params);
 
     return response?.playerstats;

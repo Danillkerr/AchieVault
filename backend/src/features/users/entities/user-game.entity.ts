@@ -6,6 +6,7 @@ import {
   JoinColumn,
   Index,
   BaseEntity,
+  UpdateDateColumn,
 } from 'typeorm';
 import { User } from '../../../core/entities/user.entity';
 import { Game } from '../../game/entities/game.entity';
@@ -25,7 +26,10 @@ export class UserGame extends BaseEntity {
   @Column({ type: 'integer', nullable: true, default: null })
   playtime: number;
 
-  @ManyToOne(() => User, (user) => user.user_games)
+  @UpdateDateColumn()
+  updated_at: Date;
+
+  @ManyToOne(() => User, (user) => user.user_games, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 

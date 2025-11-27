@@ -20,7 +20,7 @@ export class UserAchievement extends BaseEntity {
   @Column({ type: 'timestamp', nullable: true })
   obtained: Date | null;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 

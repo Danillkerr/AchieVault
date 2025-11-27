@@ -22,4 +22,9 @@ export abstract class UserAchievementRepository {
     steamId: string,
     transactionManager?: EntityManager,
   ): Promise<any[]>;
+
+  abstract countUnlockedByGameIds(
+    userId: number,
+    gameIds: number[],
+  ): Promise<{ game_id: number; cnt: string }[]>;
 }

@@ -1,0 +1,113 @@
+.page {
+  padding: 40px 0 60px;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #e0eafc 0%, #cfdef3 100%);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.cardWrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.card {
+  background-color: var(--color-bg-card);
+  padding: 40px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+
+  width: 100%;
+  max-width: 900px;
+
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pageTitle {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--color-text-main);
+  margin: 0 0 30px 0;
+  text-align: center;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 20px;
+}
+
+.footer {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 20px;
+}
+
+.cancelBtn {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  padding: 12px 24px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancelBtn:hover {
+  border-color: var(--color-text-main);
+  color: var(--color-text-main);
+  background-color: var(--color-bg-section);
+}
+
+.submitBtn {
+  background: var(--color-accent-primary);
+  color: #fff;
+  border: none;
+  padding: 12px 30px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: var(--shadow-card);
+}
+
+.submitBtn:hover:not(:disabled) {
+  background: var(--color-accent-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.submitBtn:disabled {
+  background: var(--color-border);
+  color: var(--color-text-secondary);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+@media (max-width: 600px) {
+  .card {
+    padding: 20px;
+  }
+  .footer {
+    flex-direction: column-reverse;
+  }
+  .submitBtn,
+  .cancelBtn {
+    width: 100%;
+  }
+}

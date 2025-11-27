@@ -1,151 +1,290 @@
 .roadmapContainer {
   display: grid;
-  grid-template-columns: 1.5fr 1fr 1fr;
-  gap: 20px;
+  grid-template-columns: 1.5fr auto 1fr;
+  gap: 30px;
   align-items: center;
 
-  background: linear-gradient(90deg, #9da6b6 0%, #b0b8c6 100%);
-  color: #333;
-
-  padding: 25px 30px;
+  background-color: #fff;
   border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
   box-shadow: var(--shadow-card);
-  margin-bottom: 40px;
+
+  padding: 24px 30px;
+  margin-bottom: 30px;
   text-decoration: none;
-  transition: transform 0.2s;
+
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.roadmapContainer::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background-color: var(--color-accent-primary);
 }
 
 .roadmapContainer:hover {
   transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--color-accent-primary);
 }
 
-.roadmapCover {
-  width: 70px;
-  height: 100px;
-  object-fit: cover;
-  border-radius: 6px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  transition: transform 0.2s;
-}
-
-.roadmapContainer:hover .roadmapCover {
-  transform: scale(1.05) rotate(-3deg);
-}
-
-.roadmapLeft {
+.mainSection {
   display: flex;
   align-items: center;
   gap: 20px;
 }
 
-.roadmapInfo {
-  flex: 1;
-}
-.roadmapTitle {
-  margin: 0 0 10px 0;
-  font-size: 1.5rem;
-  color: #222;
-  font-weight: 800;
+.coverWrapper {
+  width: 80px;
+  height: 110px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  background-color: #eee;
 }
 
-.progressWrapper {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.roadmapCover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
 }
-.progressBar {
+
+.roadmapContainer:hover .roadmapCover {
+  transform: scale(1.1);
+}
+
+.infoWrapper {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.roadmapTitle {
+  margin: 0 0 12px 0;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--color-text-main);
+  line-height: 1.2;
+}
+
+.progressBlock {
+  width: 100%;
+}
+
+.progressHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+}
+
+.progressPercent {
+  color: var(--color-accent-primary);
+}
+
+.progressBar {
   height: 8px;
-  background: rgba(0, 0, 0, 0.2);
+  background-color: var(--color-bg-section);
   border-radius: 4px;
   overflow: hidden;
+  margin-bottom: 6px;
 }
+
 .progressFill {
   height: 100%;
-  background-color: #27ae60;
+  background: linear-gradient(
+    90deg,
+    var(--color-accent-primary) 0%,
+    #a855f7 100%
+  );
   border-radius: 4px;
 }
-.progressText {
-  font-weight: 700;
-  font-size: 0.85rem;
+
+.progressSubtext {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
 }
 
-.roadmapStats {
+.statsSection {
   display: flex;
-  justify-content: space-around;
-  background: rgba(255, 255, 255, 0.4);
-  padding: 10px;
-  border-radius: 8px;
+  gap: 30px;
+  padding: 0 30px;
+
+  border-left: 1px solid var(--color-border);
+  border-right: 1px solid var(--color-border);
 }
 
-.rStat {
+.statBox {
   display: flex;
   flex-direction: column;
+  align-items: center;
   text-align: center;
 }
-.rsLabel {
+
+.statLabel {
   font-size: 0.7rem;
   text-transform: uppercase;
-  color: #555;
-  font-weight: 600;
-}
-.rsValue {
-  font-size: 1.1rem;
+  color: var(--color-text-secondary);
   font-weight: 700;
+  margin-bottom: 4px;
+  letter-spacing: 0.5px;
 }
 
-.roadmapRight {
-  background: rgba(255, 255, 255, 0.4);
-  padding: 12px 15px;
-  border-radius: 8px;
+.statValue {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--color-text-main);
+}
+
+.metaSection {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 }
 
 .recommendBox {
   display: flex;
   flex-direction: column;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  padding-bottom: 5px;
+  background-color: var(--color-bg-section);
+  padding: 10px 15px;
+  border-radius: 8px;
 }
+
 .recLabel {
-  font-size: 0.75rem;
-  color: #444;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  font-weight: 700;
+  margin-bottom: 2px;
 }
+
 .recGameName {
   font-weight: 700;
   font-size: 0.95rem;
-}
-.miniStatus {
-  font-size: 0.75rem;
-  color: #444;
-  display: flex;
-  gap: 10px;
+  color: var(--color-text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.emptyRoadmap {
-  background: #fff;
-  border: 2px dashed var(--color-border);
-  color: var(--color-text-main);
-  justify-content: center;
-  text-align: center;
-  box-shadow: none;
+.statusGrid {
   display: flex;
-}
-.createFakeBtn {
-  background: var(--color-accent-primary);
-  color: #fff;
-  padding: 8px 16px;
-  border-radius: 6px;
+  gap: 15px;
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
   font-weight: 600;
-  margin-top: 10px;
-  display: inline-block;
+}
+
+.statusItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.emptyState {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px dashed var(--color-border);
+  background-color: #fafafa;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.emptyState:hover {
+  border-color: var(--color-accent-primary);
+  background-color: #fff;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card);
+}
+
+.emptyState::before {
+  display: none;
+}
+
+.emptyContent {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.emptyIcon {
+  font-size: 3rem;
+  opacity: 0.5;
+}
+
+.emptyText h3 {
+  margin: 0 0 5px 0;
+  color: var(--color-text-main);
+}
+.emptyText p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}
+
+.createFakeBtn {
+  background-color: var(--color-accent-primary);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 30px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-top: 5px;
+  box-shadow: 0 4px 10px rgba(145, 71, 255, 0.3);
 }
 
 @media (max-width: 900px) {
   .roadmapContainer {
     grid-template-columns: 1fr;
+    padding: 20px;
+    gap: 20px;
+  }
+
+  .statsSection {
+    flex-direction: row;
+    justify-content: space-around;
+    border: none;
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    padding: 15px 0;
+  }
+
+  .mainSection {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .coverWrapper {
+    width: 120px;
+    height: 160px;
+  }
+
+  .metaSection {
+    text-align: center;
+  }
+
+  .statusGrid {
+    justify-content: center;
   }
 }

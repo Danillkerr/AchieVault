@@ -4,6 +4,7 @@ import { UserGameRepository } from '../repositories/abstracts/user-game.reposito
 import { UserGame } from '../entities/user-game.entity';
 import { ISteamOwnedGame } from '../../../core/interfaces/user-source/user-source.interface';
 import { IUserGameUpsert } from '../interfaces/user-game.interface';
+import { GetUserLibraryDto } from '../dto/get-user-library.dto';
 
 @Injectable()
 export class UserGameService {
@@ -53,5 +54,46 @@ export class UserGameService {
       gamesToUpsert,
       transactionManager,
     );
+  }
+
+  async getUserLibrary(userId: number, dto: GetUserLibraryDto) {
+    const [entities, total] = await this.userGameRepository.findLibrary(
+      userId,
+      dto,
+    );
+
+    const data = entities.map((ug) => ({
+      id: ug.game.id,
+      steam_id: ug.game.steam_id,
+      title: ug.game.title,
+      logo: ug.game.logo,
+    }));
+
+    return {
+      data,
+      meta: {
+        totalItems: total,
+        itemCount: data.length,
+        itemsPerPage: dto.limit,
+        totalPages: Math.ceil(total / dto.limit),
+        currentPage: dto.page,
+      },
+    };
+  }
+
+  async getGamesForRecommendation(
+    userId: number,
+    gameIds: number[],
+    transactionManager?: EntityManager,
+  ): Promise<any[]> {
+    return this.userGameRepository.findGamesForRecommendation(
+      userId,
+      gameIds,
+      transactionManager,
+    );
+  }
+
+  async findByGameIds(userId: number, gameIds: number[]) {
+    return this.userGameRepository.findByGameIds(userId, gameIds);
   }
 }

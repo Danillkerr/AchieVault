@@ -11,7 +11,6 @@ import { Inject } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
 
-import { IGame } from '../../../core/interfaces/games/game.interface';
 import { IGameToSync } from '../interfaces/game-to-sync.interface';
 
 import { UserGameService } from '../../users/services/user-game.service';
@@ -45,13 +44,18 @@ export class SyncService {
     @InjectQueue('user-sync-queue') private userQueue: Queue,
   ) {}
 
-  async triggerBackgroundSync(userId: number): Promise<void> {
+  async triggerBackgroundSync(
+    userId: number,
+  ): Promise<{ status: 'queued' | 'cooldown'; message: string }> {
     const key = `sync_cooldown:${userId}`;
     const isCooldown = await this.cacheManager.get(key);
 
     if (isCooldown) {
       this.logger.log(`User ${userId} is on sync cooldown. Skipping.`);
-      return;
+      return {
+        status: 'cooldown',
+        message: 'Profile was updated recently. Try again later.',
+      };
     }
 
     this.logger.log(`Triggering background sync for user ${userId}`);
@@ -59,6 +63,11 @@ export class SyncService {
     await this.userQueue.add('sync-user-job', { userId });
 
     await this.cacheManager.set(key, 'true', 1800 * 1000);
+
+    return {
+      status: 'queued',
+      message: 'Synchronization started in background.',
+    };
   }
 
   async syncUser(user: User): Promise<void> {
@@ -83,14 +92,11 @@ export class SyncService {
 
     if (!userUnlinkedGames) return;
 
-    const enrichedGames = await this._enrichNewGames(newDBGames);
+    if (newDBGames.length > 0) {
+      await this.gameEnrichmentService.enrichGames(newDBGames);
+    }
 
-    await this._performSyncTransaction(
-      user,
-      userUnlinkedGames,
-      enrichedGames,
-      allGamesCount,
-    );
+    await this._performSyncTransaction(user, userUnlinkedGames, allGamesCount);
 
     this.logger.log(`Game sync finished for ${user.name}.`);
   }
@@ -152,13 +158,15 @@ export class SyncService {
 
     this.logger.log(`Found ${gamesToUpdate.length} games with new playtime...`);
 
-    const syncPromises = gamesToUpdate.map((game) =>
-      this._syncSingleGameAchievements(user, game).catch((err) => {
-        this.logger.error(`Parallel sync for ${game.steam_id} failed`, err);
-      }),
-    );
-
-    await Promise.all(syncPromises);
+    for (const game of gamesToUpdate) {
+      try {
+        await this._syncSingleGameAchievements(user, game);
+      } catch (err) {
+        this.logger.warn(
+          `Sync failed for game ${game.steam_id}: ${err.message}`,
+        );
+      }
+    }
 
     await this.userStatsService.recalculateUserStats(user.id);
 
@@ -188,32 +196,34 @@ export class SyncService {
       game.steam_id,
     );
 
-    if (typeof achievementsFromApi === 'undefined') {
-      this.logger.warn(`No achievements found for ${game.steam_id}. Skipping.`);
-
-      await this.dataSource.transaction(async (manager) => {
-        await this.userGameService.updateUserGamePlaytime(
-          game.userGame_id,
-          game.new_playtime,
-          manager,
-        );
-      });
+    if (!achievementsFromApi || achievementsFromApi.length === 0) {
       return;
     }
 
     await this.dataSource.transaction(async (manager) => {
-      this.logger.log(
-        `Syncing achievements for game ${JSON.stringify(game)}...`,
+      const apiNames = achievementsFromApi.map((a) => a.apiname);
+
+      let achievementMap = await this.achievementService.getAchievementsMap(
+        game.game_id,
+        apiNames,
       );
 
-      const achievementMap =
-        await this.achievementService.bulkUpsertAchievements(
-          game.game_id,
-          achievementsFromApi,
-          manager,
+      if (achievementMap.size < apiNames.length) {
+        this.logger.warn(
+          `Game ${game.steam_id} has missing achievements in DB. Triggering Enrichment...`,
         );
 
-      if (achievementMap) {
+        await this.gameEnrichmentService.syncGameWithAchievements(
+          game.steam_id,
+        );
+
+        achievementMap = await this.achievementService.getAchievementsMap(
+          game.game_id,
+          apiNames,
+        );
+      }
+
+      if (achievementMap.size > 0) {
         await this.userAchievementService.bulkUpsertFromSteam(
           user.id,
           achievementMap,
@@ -228,6 +238,7 @@ export class SyncService {
         manager,
       );
     });
+
     this.logger.log(`Successfully synced ${game.steam_id}.`);
   }
 
@@ -265,35 +276,13 @@ export class SyncService {
     };
   }
 
-  private async _enrichNewGames(
-    steamIds: string[] | undefined,
-  ): Promise<IGame[]> {
-    if (!steamIds || steamIds.length === 0) {
-      return [];
-    }
-
-    this.logger.log(`Enriching ${steamIds.length} new games sequentially...`);
-
-    const enrichedGames: IGame[] =
-      await this.gameEnrichmentService.enrichGames(steamIds);
-
-    this.logger.log(`Successfully enriched ${enrichedGames.length} games.`);
-    return enrichedGames;
-  }
-
   private async _performSyncTransaction(
     user: User,
     userUnlinkedGames: ISteamOwnedGame[],
-    enrichedGames: IGame[],
     totalGameCount: number,
   ) {
     await this.dataSource.transaction(async (manager) => {
       this.logger.log(`Running transaction...`);
-
-      if (enrichedGames.length > 0) {
-        this.logger.log(`Creating ${enrichedGames.length} new games in DB...`);
-        await this.gamesService.bulkCreateGames(enrichedGames, manager);
-      }
 
       if (userUnlinkedGames.length > 0) {
         this.logger.log(

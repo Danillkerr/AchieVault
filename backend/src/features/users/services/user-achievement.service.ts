@@ -53,4 +53,21 @@ export class UserAchievementService {
       transactionManager,
     );
   }
+
+  async getUnlockedAchievementsCount(
+    userId: number,
+    gameIds: number[],
+  ): Promise<Map<number, number>> {
+    const rawData = await this.userAchievementRepo.countUnlockedByGameIds(
+      userId,
+      gameIds,
+    );
+
+    const map = new Map<number, number>();
+    rawData.forEach((row) => {
+      map.set(Number(row.game_id), Number(row.cnt));
+    });
+
+    return map;
+  }
 }

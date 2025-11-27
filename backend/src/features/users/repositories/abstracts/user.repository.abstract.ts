@@ -31,5 +31,7 @@ export abstract class UserRepository {
     transactionManager?: EntityManager,
   ): Promise<void>;
 
+  abstract delete(userId: number): Promise<void>;
+
   abstract searchUsers(query: string, limit?: number): Promise<User[]>;
 }

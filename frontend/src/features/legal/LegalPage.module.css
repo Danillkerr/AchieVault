@@ -1,0 +1,113 @@
+.page {
+  min-height: 100vh;
+  padding-top: 60px;
+  padding-bottom: 60px;
+
+  background: linear-gradient(180deg, #e0eafc 0%, #cfdef3 100%);
+
+  display: flex;
+  justify-content: center;
+}
+
+.container {
+  width: 100%;
+  max-width: 900px;
+  margin: 40px 20px;
+}
+
+.document {
+  background-color: var(--color-bg-card, #fff);
+  padding: 60px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+
+  color: var(--color-text-main);
+  line-height: 1.8;
+  font-size: 1rem;
+
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+  color: var(--color-text-main);
+  letter-spacing: -1px;
+}
+
+.lastUpdated {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 40px;
+  display: block;
+  font-style: italic;
+}
+
+.section {
+  margin-bottom: 30px;
+}
+
+.section h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: var(--color-text-main);
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 10px;
+}
+
+.section h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 20px 0 10px;
+}
+
+.section p {
+  margin-bottom: 15px;
+  color: #4b5563;
+}
+
+.section ul {
+  padding-left: 20px;
+  margin-bottom: 15px;
+}
+
+.section li {
+  margin-bottom: 8px;
+  color: #4b5563;
+}
+
+.link {
+  color: var(--color-accent-primary);
+  text-decoration: none;
+  font-weight: 600;
+  border-bottom: 1px dotted var(--color-accent-primary);
+}
+
+.link:hover {
+  color: var(--color-accent-hover);
+  border-bottom-style: solid;
+}
+
+@media (max-width: 768px) {
+  .document {
+    padding: 30px 20px;
+  }
+
+  .title {
+    font-size: 2rem;
+  }
+}

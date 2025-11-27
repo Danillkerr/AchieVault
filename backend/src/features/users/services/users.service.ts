@@ -61,6 +61,10 @@ export class UsersService {
     return this.userRepository.update(id, data, transactionManager);
   }
 
+  async deleteUser(userId: number): Promise<void> {
+    await this.userRepository.delete(userId);
+  }
+
   async search(query: string): Promise<User[]> {
     if (!query || query.trim().length < 2) {
       return [];

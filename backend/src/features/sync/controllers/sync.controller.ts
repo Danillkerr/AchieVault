@@ -1,22 +1,28 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  NotFoundException,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { SyncService } from '../services/sync.service';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from 'src/core/entities/user.entity';
+import { HttpStatus, HttpCode } from '@nestjs/common';
 
 @Controller('sync')
 export class SyncController {
   constructor(private syncService: SyncService) {}
-  @Get('all')
+  @Post('/')
   @UseGuards(AuthGuard('jwt'))
+  @HttpCode(HttpStatus.ACCEPTED)
   async syncAll(@Req() req) {
     const user = req.user as User;
 
-    if (user) {
-      this.syncService.triggerBackgroundSync(user.id).catch((err) => {
-        console.error('Background sync error:', err);
-      });
-    }
+    if (!user) throw new NotFoundException('User not found');
 
-    return { message: 'Full synchronization has been started.' };
+    const result = await this.syncService.triggerBackgroundSync(user.id);
+
+    return result;
   }
 }

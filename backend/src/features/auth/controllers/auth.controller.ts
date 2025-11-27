@@ -1,4 +1,13 @@
-import { Controller, Get, Redirect, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpCode,
+  Post,
+  Redirect,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import type { Response } from 'express';
 import { AuthService } from '../services/auth.service';
@@ -29,6 +38,7 @@ export class AuthController {
       secure: true,
       path: '/',
       maxAge: 7 * 24 * 60 * 60 * 1000,
+      sameSite: 'lax',
     });
 
     const frontendUrl =
@@ -40,5 +50,18 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   getProfile(@Req() req) {
     return req.user;
+  }
+
+  @Post('logout')
+  @HttpCode(200)
+  async logout(@Res({ passthrough: true }) response: Response) {
+    response.clearCookie('access_token', {
+      httpOnly: true,
+      path: '/',
+      secure: true,
+      sameSite: 'lax',
+    });
+
+    return { message: 'Logged out successfully' };
   }
 }

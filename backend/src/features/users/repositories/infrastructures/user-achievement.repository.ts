@@ -101,4 +101,26 @@ export class TypeOrmUserAchievementRepository
       },
     });
   }
+
+  async countUnlockedByGameIds(
+    userId: number,
+    gameIds: number[],
+  ): Promise<{ game_id: number; cnt: string }[]> {
+    if (gameIds.length === 0) return [];
+
+    const manager = this.getManager();
+
+    const result = await manager
+      .createQueryBuilder(UserAchievement, 'ua')
+      .select('a.game_id', 'game_id')
+      .addSelect('COUNT(ua.id)', 'cnt')
+      .innerJoin('ua.achievement', 'a')
+      .where('ua.user_id = :userId', { userId })
+      .andWhere('a.game_id IN (:...gameIds)', { gameIds })
+      .andWhere('ua.obtained IS NOT NULL')
+      .groupBy('a.game_id')
+      .getRawMany();
+
+    return result;
+  }
 }

@@ -16,6 +16,7 @@ import { SchedulerModule } from './features/scheduler/modules/scheduler.module';
 import * as redisStore from 'cache-manager-redis-store';
 import { GameDiscoveryModule } from './features/game-discovery/modules/game-discovery.module';
 import { GuideModule } from './features/guide/module/guide.module';
+import { RoadmapModule } from './features/roadmap/modules/roadmap.module';
 
 @Module({
   imports: [
@@ -77,6 +78,7 @@ import { GuideModule } from './features/guide/module/guide.module';
     GameDiscoveryModule,
     SchedulerModule,
     GuideModule,
+    RoadmapModule,
   ],
 
   controllers: [],

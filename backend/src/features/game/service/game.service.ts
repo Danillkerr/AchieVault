@@ -45,4 +45,8 @@ export class GameService {
   ): Promise<Game[]> {
     return this.gameRepository.findBySteamIds(steamIds, transactionManager);
   }
+
+  async getRoadmapStats(gameIds: number[]) {
+    return this.gameRepository.getAggregateStats(gameIds);
+  }
 }

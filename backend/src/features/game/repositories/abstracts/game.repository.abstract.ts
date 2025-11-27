@@ -2,6 +2,7 @@ import { Game } from '../../entities/game.entity';
 import { IGameSteamData } from '../../interfaces/game-steam-data.interface';
 import { IGame } from '../../../../core/interfaces/games/game.interface';
 import { EntityManager } from 'typeorm';
+import { GameStatsResult } from '../../interfaces/game-stats.interface';
 
 export abstract class GameRepository {
   abstract findOrCreateBySteamId(
@@ -23,4 +24,6 @@ export abstract class GameRepository {
     steamIds: string[],
     transactionManager?: EntityManager,
   ): Promise<Game[]>;
+
+  abstract getAggregateStats(gameIds: number[]): Promise<GameStatsResult>;
 }

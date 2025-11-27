@@ -70,6 +70,11 @@ export class TypeOrmUserRepository
     return user;
   }
 
+  async delete(userId: number): Promise<void> {
+    const manager = this.getManager();
+    await manager.delete(User, userId);
+  }
+
   async update(
     id: number,
     data: DeepPartial<User>,

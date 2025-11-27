@@ -1,0 +1,83 @@
+.gameItem {
+  cursor: pointer;
+  transition: transform 0.2s, opacity 0.2s;
+  position: relative;
+}
+
+.gameItem:hover {
+  transform: translateY(-3px);
+}
+
+.disabledItem {
+  opacity: 0.4;
+  cursor: not-allowed;
+  filter: grayscale(1);
+}
+
+.disabledItem:hover {
+  transform: none;
+}
+
+.coverWrapper {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  aspect-ratio: 2 / 3;
+  width: 100%;
+  background-color: #eee;
+}
+
+.gameCover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.selected .coverWrapper {
+  border-color: var(--color-accent-primary);
+  box-shadow: 0 0 0 4px rgba(145, 71, 255, 0.2);
+}
+
+.overlaySelected {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(145, 71, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.checkmark {
+  font-size: 1.2rem;
+  color: #fff;
+  background: var(--color-accent-primary);
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.gameTitle {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+  margin-top: 8px;
+  line-height: 1.2;
+  color: var(--color-text-main);
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.selected .gameTitle {
+  color: var(--color-accent-primary);
+  font-weight: 700;
+}

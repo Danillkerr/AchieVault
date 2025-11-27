@@ -17,6 +17,9 @@ export class Achievement extends BaseEntity {
   @Column({ type: 'varchar', length: 100, nullable: false })
   api_name: string;
 
+  @Column({ type: 'numeric', default: 0 })
+  global_percent: number;
+
   @ManyToOne(() => Game)
   @JoinColumn({ name: 'game_id' })
   game: Game;

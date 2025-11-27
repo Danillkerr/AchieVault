@@ -6,6 +6,8 @@ import { IGame } from 'src/core/interfaces/games/game.interface';
 import { BaseTypeOrmRepository } from '../../../../core/repositories/base.repository';
 import { GameRepository } from '../abstracts/game.repository.abstract';
 import { IGameSteamData } from '../../interfaces/game-steam-data.interface';
+import { Achievement } from '../../entities/achievement.entity';
+import { GameStatsResult } from '../../interfaces/game-stats.interface';
 
 @Injectable()
 export class TypeOrmGameRepository
@@ -83,5 +85,28 @@ export class TypeOrmGameRepository
         steam_id: In(steamIds),
       },
     });
+  }
+
+  async getAggregateStats(gameIds: number[]): Promise<GameStatsResult> {
+    if (gameIds.length === 0) return { totalTime: 0, totalAchievements: 0 };
+
+    const manager = this.getManager();
+
+    const { sumTime } = await manager
+      .createQueryBuilder(Game, 'g')
+      .select('SUM(g.time_to_beat)', 'sumTime')
+      .where('g.id IN (:...ids)', { ids: gameIds })
+      .getRawOne();
+
+    const achResult = await manager
+      .createQueryBuilder(Achievement, 'a')
+      .select('COUNT(a.id)', 'cnt')
+      .where('a.game IN (:...ids)', { ids: gameIds })
+      .getRawOne();
+
+    return {
+      totalTime: parseInt(sumTime, 10) || 0,
+      totalAchievements: parseInt(achResult?.cnt, 10) || 0,
+    };
   }
 }
