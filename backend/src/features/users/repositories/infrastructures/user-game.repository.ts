@@ -1,12 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserGame } from 'src/features/users/entities/user-game.entity';
-import { EntityManager, In, Repository } from 'typeorm';
+import { EntityManager, In, Repository, SelectQueryBuilder } from 'typeorm';
 import { UserGameRepository } from '../abstracts/user-game.repository.abstract';
 import { IUserGameUpsert } from '../../interfaces/user-game.interface';
 import { BaseTypeOrmRepository } from 'src/core/repositories/base.repository';
 import { GetUserLibraryDto, LibrarySort } from '../../dto/get-user-library.dto';
 import { Achievement } from 'src/features/game/entities/achievement.entity';
+import { Game } from 'src/features/game/entities/game.entity';
+
+interface RecommendationRawResult {
+  user_game_id: number;
+  game_id: number;
+  title: string;
+  time_to_beat: number | null;
+  total_achievements: string;
+  unlocked_count: string;
+  locked_achievements: number[] | null;
+}
 
 @Injectable()
 export class TypeOrmUserGameRepository
@@ -22,80 +33,53 @@ export class TypeOrmUserGameRepository
 
   async getAllUserGames(
     userId: number,
-    transactionManager?: EntityManager,
+    tm?: EntityManager,
   ): Promise<UserGame[]> {
-    const manager = this.getManager(transactionManager);
-    return manager.find(UserGame, {
-      where: { user: { id: userId } },
-      relations: {
-        game: true,
+    return this.find(
+      {
+        where: { user: { id: userId } },
+        relations: { game: true },
       },
-    });
+      tm,
+    );
+  }
+
+  async findByGameIds(
+    userId: number,
+    gameIds: number[],
+    tm?: EntityManager,
+  ): Promise<UserGame[]> {
+    if (gameIds.length === 0) return [];
+    return this.find(
+      {
+        where: {
+          user: { id: userId },
+          game: { id: In(gameIds) },
+        },
+      },
+      tm,
+    );
   }
 
   async getOwnedSteamIds(
     userId: number,
-    transactionManager?: EntityManager,
+    tm?: EntityManager,
   ): Promise<string[]> {
-    const manager = this.getManager(transactionManager);
-    const userGames: { steamid: string }[] = await manager
+    const manager = this.getManager(tm);
+    const userGames = await manager
       .createQueryBuilder(UserGame, 'User_Game')
       .leftJoin('User_Game.game', 'Game')
       .select('Game.steam_id', 'steamid')
       .where('User_Game.user_id = :userId', { userId })
-      .getRawMany();
+      .getRawMany<{ steamid: string }>();
 
     return userGames.map((game) => game.steamid);
-  }
-
-  async updatePlaytime(
-    userGameId: number,
-    newPlaytime: number,
-    transactionManager?: EntityManager,
-  ): Promise<void> {
-    const manager = this.getManager(transactionManager);
-    await manager.update(
-      UserGame,
-      { id: userGameId },
-      { playtime: newPlaytime },
-    );
-  }
-
-  async bulkUpsert(
-    userId: number,
-    games: IUserGameUpsert[],
-    transactionManager?: EntityManager,
-  ): Promise<void> {
-    if (games.length === 0) return;
-
-    const steamIds = games.map((g) => g.steam_id);
-    const playtimes = games.map((g) => g.playtime);
-
-    const sql = `
-      INSERT INTO "User_Game" (user_id, game_id, playtime) 
-    SELECT
-      $1 AS user_id,
-      g.id AS game_id,
-      NULL AS playtime
-    FROM
-      unnest($2::text[], $3::int[]) AS s(steam_id, playtime)
-    
-    INNER JOIN "Game" g ON g.steam_id = s.steam_id
-    
-    ON CONFLICT (user_id, game_id) DO UPDATE
-    SET
-      playtime = EXCLUDED.playtime;
-    `;
-
-    const manager = this.getManager(transactionManager);
-    await manager.query(sql, [userId, steamIds, playtimes]);
   }
 
   async findLibrary(
     userId: number,
     options: GetUserLibraryDto,
   ): Promise<[UserGame[], number]> {
-    const { page, limit, search, sortBy } = options;
     const manager = this.getManager();
 
     const qb = manager
@@ -103,22 +87,112 @@ export class TypeOrmUserGameRepository
       .leftJoinAndSelect('ug.game', 'g')
       .where('ug.user_id = :userId', { userId });
 
-    qb.andWhere('g.title != :unknownTitle', { unknownTitle: 'Unknown Title' });
+    this.applyLibraryFilters(qb, options.search);
 
-    qb.andWhere((qb) => {
-      const subQuery = qb
+    this.applyLibrarySort(qb, options.sortBy);
+
+    qb.skip((options.page - 1) * options.limit).take(options.limit);
+
+    return qb.getManyAndCount();
+  }
+
+  async findGamesForRecommendation(
+    userId: number,
+    gameIds: number[],
+  ): Promise<RecommendationRawResult[]> {
+    if (!gameIds.length) return [];
+
+    const manager = this.getManager();
+    const qb = manager
+      .createQueryBuilder(UserGame, 'ug')
+      .innerJoin('ug.game', 'g')
+      .select([
+        'ug.id AS user_game_id',
+        'g.id AS game_id',
+        'g.title AS title',
+        'g.time_to_beat AS time_to_beat',
+      ])
+      .where('ug.user_id = :userId', { userId })
+      .andWhere('g.id IN (:...gameIds)', { gameIds });
+
+    this.addTotalAchievementsSelect(qb);
+    this.addUnlockedCountSelect(qb);
+    this.addLockedAchievementsSelect(qb, userId);
+
+    const rawData = await qb.getRawMany<RecommendationRawResult>();
+
+    return rawData.filter((row) => {
+      const total = parseInt(row.total_achievements, 10);
+      const unlocked = parseInt(row.unlocked_count, 10);
+      return total > 0 && unlocked < total;
+    });
+  }
+
+  async updatePlaytime(
+    userGameId: number,
+    newPlaytime: number,
+    tm?: EntityManager,
+  ): Promise<void> {
+    await this.update(userGameId, { playtime: newPlaytime }, tm);
+  }
+
+  async bulkUpsert(
+    userId: number,
+    games: IUserGameUpsert[],
+    tm?: EntityManager,
+  ): Promise<void> {
+    if (games.length === 0) return;
+
+    const manager = this.getManager(tm);
+    const steamIds = games.map((g) => g.steam_id);
+
+    const foundGames = await manager.find(Game, {
+      where: { steam_id: In(steamIds) },
+      select: ['id', 'steam_id'],
+    });
+
+    if (foundGames.length === 0) return;
+
+    const valuesToInsert = foundGames.map((game) => ({
+      user: { id: userId },
+      game: { id: game.id },
+      playtime: null,
+    }));
+
+    await manager
+      .createQueryBuilder()
+      .insert()
+      .into(UserGame)
+      .values(valuesToInsert)
+      .orUpdate(['playtime'], ['user_id', 'game_id'])
+      .execute();
+  }
+
+  private applyLibraryFilters(
+    qb: SelectQueryBuilder<UserGame>,
+    search?: string,
+  ) {
+    qb.andWhere('g.title != :unknown', { unknown: 'Unknown Title' });
+
+    qb.andWhere((sub) => {
+      const sq = sub
         .subQuery()
         .select('1')
         .from(Achievement, 'a')
         .where('a.game_id = g.id')
         .getQuery();
-      return `EXISTS ${subQuery}`;
+      return `EXISTS ${sq}`;
     });
 
     if (search) {
       qb.andWhere('g.title ILIKE :search', { search: `%${search}%` });
     }
+  }
 
+  private applyLibrarySort(
+    qb: SelectQueryBuilder<UserGame>,
+    sortBy?: LibrarySort,
+  ) {
     switch (sortBy) {
       case LibrarySort.NAME:
         qb.orderBy('g.title', 'ASC');
@@ -128,72 +202,54 @@ export class TypeOrmUserGameRepository
         qb.orderBy('ug.playtime', 'DESC');
         break;
     }
-
-    qb.skip((page - 1) * limit).take(limit);
-
-    return qb.getManyAndCount();
   }
 
-  async findGamesForRecommendation(
-    userId: number,
-    gameIds: number[],
-  ): Promise<any[]> {
-    if (!gameIds || gameIds.length === 0) return [];
-
-    const manager = this.getManager();
-
-    const idsString = gameIds.join(',');
-
-    const rawData = await manager.query(
-      `
-      SELECT 
-        ug.id as user_game_id,
-        g.id as game_id,
-        g.title,
-        g.time_to_beat,
-        (SELECT COUNT(*) FROM "Achievement" a WHERE a.game_id = g.id) as total_achievements,
-        (
-          SELECT COUNT(*) 
-          FROM "User_Achievement" ua_cnt 
-          JOIN "Achievement" a_cnt ON ua_cnt.achievement_id = a_cnt.id
-          WHERE ua_cnt.user_id = $1 
-          AND ua_cnt.obtained IS NOT NULL 
-          AND a_cnt.game_id = g.id
-        ) as unlocked_count,
-        (
-          SELECT array_agg(a.global_percent)
-          FROM "Achievement" a
-          WHERE a.game_id = g.id
-          AND a.id NOT IN (
-            SELECT ua.achievement_id 
-            FROM "User_Achievement" ua 
-            WHERE ua.user_id = $1 AND ua.obtained IS NOT NULL
-          )
-        ) as locked_achievements
-      FROM "User_Game" ug
-      JOIN "Game" g ON ug.game_id = g.id
-      WHERE ug.user_id = $1
-      AND g.id IN (${idsString})
-    `,
-      [userId],
+  private addTotalAchievementsSelect(qb: SelectQueryBuilder<UserGame>) {
+    qb.addSelect(
+      (sub) =>
+        sub
+          .select('COUNT(*)', 'total')
+          .from(Achievement, 'a')
+          .where('a.game_id = g.id'),
+      'total_achievements',
     );
-
-    return rawData.filter((row) => {
-      const total = parseInt(row.total_achievements);
-      const unlocked = parseInt(row.unlocked_count);
-      return total > 0 && unlocked < total;
-    });
   }
 
-  async findByGameIds(userId: number, gameIds: number[]): Promise<UserGame[]> {
-    if (gameIds.length === 0) return [];
+  private addUnlockedCountSelect(qb: SelectQueryBuilder<UserGame>) {
+    qb.addSelect(
+      (sub) =>
+        sub
+          .select('COUNT(*)', 'unlocked')
+          .from('User_Achievement', 'ua')
+          .innerJoin('ua.achievement', 'ac')
+          .where('ua.user_id = :userId')
+          .andWhere('ua.obtained IS NOT NULL')
+          .andWhere('ac.game_id = g.id'),
+      'unlocked_count',
+    );
+  }
 
-    const manager = this.getManager();
-    return manager.find(UserGame, {
-      where: {
-        user: { id: userId },
-        game: { id: In(gameIds) },
-      },
-    });
+  private addLockedAchievementsSelect(
+    qb: SelectQueryBuilder<UserGame>,
+    userId: number,
+  ) {
+    qb.addSelect(
+      (sub) =>
+        sub
+          .select('array_agg(a.global_percent)', 'locked_percents')
+          .from(Achievement, 'a')
+          .where('a.game_id = g.id')
+          .andWhere((qb2) => {
+            const obtainedSq = qb2
+              .subQuery()
+              .select('ua.achievement_id')
+              .from('User_Achievement', 'ua')
+              .where('ua.user_id = :userId')
+              .andWhere('ua.obtained IS NOT NULL')
+              .getQuery();
+            return `a.id NOT IN ${obtainedSq}`;
+          }),
+      'locked_achievements',
+    );
   }
 }

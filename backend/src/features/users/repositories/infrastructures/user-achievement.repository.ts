@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserAchievement } from 'src/features/users/entities/user-achievement.entity';
-import { IsNull, Not, Repository, DeepPartial, EntityManager } from 'typeorm';
+import { IsNull, Not, Repository, EntityManager } from 'typeorm';
 import { UserAchievementRepository } from '../abstracts/user-achievement.repository.abstract';
 import { IAchievementToUpsert } from '../../interfaces/user-achievement.interface';
 import { BaseTypeOrmRepository } from 'src/core/repositories/base.repository';
@@ -18,109 +18,95 @@ export class TypeOrmUserAchievementRepository
     super(userAchievementRepo);
   }
 
-  async bulkUpsert(
-    achievements: IAchievementToUpsert[],
-    transactionManager?: EntityManager,
-  ): Promise<void> {
-    if (achievements.length === 0) return;
-
-    const achievementsToUpsert: DeepPartial<UserAchievement>[] =
-      achievements.map((ach) => ({
-        user: { id: ach.user.id },
-        achievement: { id: ach.achievement.id },
-        obtained: ach.obtained,
-      }));
-
-    const manager = this.getManager(transactionManager);
-
-    await manager.upsert(UserAchievement, achievementsToUpsert, [
-      'user',
-      'achievement',
-    ]);
+  async findAchievementByGame(
+    userId: number,
+    steamId: string,
+    tm?: EntityManager,
+  ): Promise<UserAchievement[]> {
+    return this.find(
+      {
+        where: {
+          user: { id: userId },
+          achievement: { game: { steam_id: steamId } },
+        },
+        relations: { achievement: true },
+      },
+      tm,
+    );
   }
 
   async countCompletedAchievements(
     userId: number,
-    transactionManager?: EntityManager,
+    tm?: EntityManager,
   ): Promise<number> {
-    const manager = this.getManager(transactionManager);
-    return manager.count(UserAchievement, {
-      where: {
-        user: { id: userId },
-        obtained: Not(IsNull()),
+    return this.count(
+      {
+        where: {
+          user: { id: userId },
+          obtained: Not(IsNull()),
+        },
       },
-    });
+      tm,
+    );
   }
 
   async countCompletedGames(
     userId: number,
-    transactionManager?: EntityManager,
+    tm?: EntityManager,
   ): Promise<number> {
-    const manager = this.getManager(transactionManager);
+    const manager = this.getManager(tm);
 
     const subQuery = manager
       .createQueryBuilder(UserAchievement, 'ua')
+      .select('a.game_id')
       .innerJoin('ua.achievement', 'a')
       .where('ua.user_id = :userId', { userId })
       .groupBy('a.game_id')
-      .select('a.game_id')
-      .addSelect(
-        `COUNT(*) FILTER (WHERE "ua"."obtained" IS NULL)`,
-        'not_obtained_count',
-      );
+      .having('COUNT(*) FILTER (WHERE ua.obtained IS NULL) = 0');
 
-    const result = await manager.connection
+    const count = await manager
       .createQueryBuilder()
-      .select(`COUNT(*)`, 'completed_games_count')
+      .select('COUNT(*)', 'cnt')
       .from(`(${subQuery.getQuery()})`, 't')
-      .where('t.not_obtained_count = 0')
       .setParameters(subQuery.getParameters())
       .getRawOne();
 
-    return parseInt(result.completed_games_count, 10) || 0;
-  }
-
-  async findAchievementByGame(
-    userId: number,
-    steamId: string,
-    transactionManager?: EntityManager,
-  ): Promise<UserAchievement[]> {
-    const manager = this.getManager(transactionManager);
-
-    return manager.find(UserAchievement, {
-      where: {
-        user: { id: userId },
-        achievement: {
-          game: {
-            steam_id: steamId,
-          },
-        },
-      },
-      relations: {
-        achievement: true,
-      },
-    });
+    return parseInt(count?.cnt, 10) || 0;
   }
 
   async countUnlockedByGameIds(
     userId: number,
     gameIds: number[],
+    tm?: EntityManager,
   ): Promise<{ game_id: number; cnt: string }[]> {
     if (gameIds.length === 0) return [];
 
-    const manager = this.getManager();
+    const manager = this.getManager(tm);
 
-    const result = await manager
+    return manager
       .createQueryBuilder(UserAchievement, 'ua')
       .select('a.game_id', 'game_id')
       .addSelect('COUNT(ua.id)', 'cnt')
       .innerJoin('ua.achievement', 'a')
       .where('ua.user_id = :userId', { userId })
-      .andWhere('a.game_id IN (:...gameIds)', { gameIds })
+      .andWhere('a.game_id IN (:...ids)', { ids: gameIds })
       .andWhere('ua.obtained IS NOT NULL')
       .groupBy('a.game_id')
       .getRawMany();
+  }
 
-    return result;
+  async bulkUpsert(
+    achievements: IAchievementToUpsert[],
+    tm?: EntityManager,
+  ): Promise<void> {
+    if (achievements.length === 0) return;
+
+    const data = achievements.map((a) => ({
+      user: { id: a.user.id },
+      achievement: { id: a.achievement.id },
+      obtained: a.obtained,
+    }));
+
+    await this.upsert(data, ['user', 'achievement'], tm);
   }
 }

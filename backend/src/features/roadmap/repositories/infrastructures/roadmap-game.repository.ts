@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { RoadmapGame } from '../../entities/roadmap-game.entity';
 import { RoadmapGameRepository } from '../abstracts/roadmap-game.repository.abstract';
 import { BaseTypeOrmRepository } from 'src/core/repositories/base.repository';
@@ -15,25 +15,20 @@ export class TypeOrmRoadmapGameRepository
     super(repo);
   }
 
-  async updateStatus(id: number, status: RoadmapStatus): Promise<void> {
-    const manager = this.getManager();
-    await manager.update(RoadmapGame, id, { status });
+  async updateStatus(
+    id: number,
+    status: RoadmapStatus,
+    tm?: EntityManager,
+  ): Promise<void> {
+    await this.update(id, { status }, tm);
   }
 
   async updateStatusByRelation(
     roadmapId: number,
     gameId: number,
     status: RoadmapStatus,
+    tm?: EntityManager,
   ): Promise<void> {
-    const manager = this.getManager();
-
-    await manager.update(
-      RoadmapGame,
-      {
-        roadmapId: roadmapId,
-        gameId: gameId,
-      },
-      { status: status },
-    );
+    await this.update({ roadmapId, gameId }, { status }, tm);
   }
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { BaseTypeOrmRepository } from '../../../../core/repositories/base.repository';
 import { Roadmap } from '../../entities/roadmap.entity';
 import { RoadmapRepository } from '../abstracts/roadmap.repository.abstract';
@@ -18,69 +18,73 @@ export class TypeOrmRoadmapRepository
     super(repo);
   }
 
-  async findById(id: number): Promise<Roadmap | null> {
-    const manager = this.getManager();
-    return manager.findOne(Roadmap, {
-      where: { id },
-      relations: {
-        games: {
-          game: true,
+  async findById(id: number, tm?: EntityManager): Promise<Roadmap | null> {
+    return this.findOne(
+      {
+        where: { id },
+        relations: {
+          games: {
+            game: true,
+          },
+          recommendedGame: true,
         },
-        recommendedGame: true,
       },
-    });
+      tm,
+    );
   }
 
-  async create(userId: number, data: CreateRoadmapData): Promise<Roadmap> {
-    const manager = this.getManager();
-
-    const roadmap = manager.create(Roadmap, {
-      name: data.name,
-      userId: userId,
-      etc_time: data.etcTime,
-      total_achievements: data.totalAchievements,
-      recGameId: data.recGameId || undefined,
-
-      games: data.gameIds.map((gameId) => ({
-        gameId: gameId,
-        status: RoadmapStatus.PLANNED,
-      })),
-    });
-
-    return manager.save(Roadmap, roadmap);
-  }
-
-  async findLatestByUserId(userId: number): Promise<Roadmap | null> {
-    const manager = this.getManager();
-
-    return manager.findOne(Roadmap, {
-      where: { userId },
-      relations: {
-        games: {
-          game: true,
+  async findLatestByUserId(
+    userId: number,
+    tm?: EntityManager,
+  ): Promise<Roadmap | null> {
+    return this.findOne(
+      {
+        where: { userId },
+        relations: {
+          games: {
+            game: true,
+          },
+          recommendedGame: true,
         },
-        recommendedGame: true,
+        order: {
+          created_at: 'DESC',
+        },
       },
-      order: {
-        created_at: 'DESC',
-      },
-    });
+      tm,
+    );
   }
 
-  async delete(id: number): Promise<void> {
-    const manager = this.getManager();
-    await manager.delete(Roadmap, id);
+  async create(
+    userId: number,
+    data: CreateRoadmapData,
+    tm?: EntityManager,
+  ): Promise<Roadmap> {
+    return this.save(
+      {
+        userId,
+        name: data.name,
+        etc_time: data.etcTime,
+        total_achievements: data.totalAchievements,
+        recGameId: data.recGameId || null,
+
+        games: data.gameIds.map((gameId) => ({
+          gameId,
+          status: RoadmapStatus.PLANNED,
+        })),
+      },
+      tm,
+    );
+  }
+
+  async delete(id: number, tm?: EntityManager): Promise<void> {
+    await super.delete(id, tm);
   }
 
   async updateRecommendedGame(
     roadmapId: number,
-    gameId: number | null,
+    gameId: number,
+    tm?: EntityManager,
   ): Promise<void> {
-    const manager = this.getManager();
-    if (gameId === null) {
-      await manager.update(Roadmap, roadmapId, { recGameId: () => 'NULL' });
-    } else {
-      await manager.update(Roadmap, roadmapId, { recGameId: gameId });
-    }
+    await this.update(roadmapId, { recGameId: gameId }, tm);
   }
 }

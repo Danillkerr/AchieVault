@@ -29,7 +29,7 @@ export class Roadmap {
   recommendedGame: Game;
 
   @Column({ name: 'rec_game_id', nullable: true })
-  recGameId: number;
+  recGameId: number | null;
 
   @Column()
   name: string;

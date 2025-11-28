@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FriendList } from 'src/features/users/entities/friendship.entity';
-import { DeepPartial, EntityManager, Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { FriendshipRepository } from '../abstracts/friendship.repository.abstract';
 import { BaseTypeOrmRepository } from 'src/core/repositories/base.repository';
 
@@ -22,22 +22,21 @@ export class TypeOrmFriendshipRepository
     friendUserIds: number[],
     transactionManager?: EntityManager,
   ): Promise<void> {
-    if (friendUserIds.length === 0) return;
+    const uniqueFriendIds = [...new Set(friendUserIds)].filter(
+      (id) => id !== currentUserId,
+    );
 
-    const friendshipsToCreate: DeepPartial<FriendList>[] = [];
+    if (uniqueFriendIds.length === 0) return;
 
-    for (const friendId of friendUserIds) {
-      const user_1_id = Math.min(currentUserId, friendId);
-      const user_2_id = Math.max(currentUserId, friendId);
+    const friendshipsToUpsert = uniqueFriendIds.map((friendId) => ({
+      user: { id: Math.min(currentUserId, friendId) },
+      friend: { id: Math.max(currentUserId, friendId) },
+    }));
 
-      friendshipsToCreate.push({
-        user: { id: user_1_id },
-        friend: { id: user_2_id },
-      });
-    }
-
-    const manager = this.getManager(transactionManager);
-
-    await manager.upsert(FriendList, friendshipsToCreate, ['user', 'friend']);
+    await this.upsert(
+      friendshipsToUpsert,
+      ['user', 'friend'],
+      transactionManager,
+    );
   }
 }

@@ -5,6 +5,22 @@ import { EntityManager } from 'typeorm';
 import { GameStatsResult } from '../../interfaces/game-stats.interface';
 
 export abstract class GameRepository {
+  abstract findByIds(
+    ids: number[],
+    transactionManager?: EntityManager,
+  ): Promise<Game[]>;
+
+  abstract findBySteamIds(
+    steamIds: string[],
+    transactionManager?: EntityManager,
+  ): Promise<Game[]>;
+
+  abstract findOneBySteamId(
+    steamId: string,
+    options?: { withAchievements?: boolean },
+    transactionManager?: EntityManager,
+  ): Promise<Game | null>;
+
   abstract findOrCreateBySteamId(
     steamGame: IGameSteamData,
     transactionManager?: EntityManager,
@@ -20,10 +36,8 @@ export abstract class GameRepository {
     transactionManager?: EntityManager,
   ): Promise<string[]>;
 
-  abstract findBySteamIds(
-    steamIds: string[],
+  abstract getAggregateStats(
+    gameIds: number[],
     transactionManager?: EntityManager,
-  ): Promise<Game[]>;
-
-  abstract getAggregateStats(gameIds: number[]): Promise<GameStatsResult>;
+  ): Promise<GameStatsResult>;
 }

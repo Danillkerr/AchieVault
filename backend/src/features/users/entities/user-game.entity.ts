@@ -24,7 +24,7 @@ export class UserGame extends BaseEntity {
   game_id: number;
 
   @Column({ type: 'integer', nullable: true, default: null })
-  playtime: number;
+  playtime: number | null;
 
   @UpdateDateColumn()
   updated_at: Date;

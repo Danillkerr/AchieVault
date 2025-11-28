@@ -141,6 +141,8 @@ export class SyncService {
         `Steam playtime: ${steamGame.playtime_forever}, DB playtime: ${dbGame.playtime}`,
       );
 
+      if (dbGame.playtime === null) dbGame.playtime = 0;
+
       if (steamGame.playtime_forever > dbGame.playtime) {
         gamesToUpdate.push({
           steam_id: steamGame.appid.toString(),

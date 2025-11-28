@@ -18,73 +18,41 @@ export class TypeOrmAchievementRepository
     super(achRepo);
   }
 
-  async bulkUpsert(
-    gameId: number,
-    achievementsFromApi: ISteamPlayerAchievement[],
-    transactionManager?: EntityManager,
-  ): Promise<Map<string, number> | undefined> {
-    if (!achievementsFromApi) return undefined;
-
-    const manager = this.getManager(transactionManager);
-
-    const achievementsToUpsert = achievementsFromApi.map((ach) => ({
-      api_name: ach.apiname,
-      game: { id: gameId },
-      global_percent: ach.global_percent || 0,
-    }));
-
-    await manager.upsert(Achievement, achievementsToUpsert, [
-      'game',
-      'api_name',
-    ]);
-
-    const allApiNames = achievementsFromApi.map((a) => a.apiname);
-    const achievementEntities = await manager.find(Achievement, {
-      where: {
-        game: { id: gameId },
-        api_name: In(allApiNames),
-      },
-      select: ['id', 'api_name'],
-    });
-
-    const map = new Map<string, number>();
-    for (const ach of achievementEntities) {
-      map.set(ach.api_name, ach.id);
-    }
-    return map;
-  }
-
   async findMapByGame(
     gameId: number,
     apiNames: string[],
-    transactionManager?: EntityManager,
+    tm?: EntityManager,
   ): Promise<Map<string, number>> {
     if (!apiNames || apiNames.length === 0) {
       return new Map();
     }
 
-    const manager = this.getManager(transactionManager);
-
-    const achievements = await manager.find(Achievement, {
-      where: {
-        game: { id: gameId },
-        api_name: In(apiNames),
+    const achievements = await this.find(
+      {
+        where: {
+          game: { id: gameId },
+          api_name: In(apiNames),
+        },
+        select: ['id', 'api_name'],
       },
-      select: ['id', 'api_name'],
-    });
+      tm,
+    );
 
     const map = new Map<string, number>();
-    for (const ach of achievements) {
-      map.set(ach.api_name, ach.id);
-    }
+    achievements.forEach((ach) => map.set(ach.api_name, ach.id));
 
     return map;
   }
 
-  async countByGameIds(gameIds: number[]): Promise<Map<number, number>> {
+  async countByGameIds(
+    gameIds: number[],
+    tm?: EntityManager,
+  ): Promise<Map<number, number>> {
     if (!gameIds.length) return new Map();
 
-    const res = await this.getManager()
+    const manager = this.getManager(tm);
+
+    const res = await manager
       .createQueryBuilder(Achievement, 'a')
       .select('a.game_id', 'gameId')
       .addSelect('COUNT(a.id)', 'cnt')
@@ -95,5 +63,24 @@ export class TypeOrmAchievementRepository
     const map = new Map<number, number>();
     res.forEach((r) => map.set(Number(r.gameId), Number(r.cnt)));
     return map;
+  }
+
+  async bulkUpsert(
+    gameId: number,
+    achievementsFromApi: ISteamPlayerAchievement[],
+    tm?: EntityManager,
+  ): Promise<Map<string, number> | undefined> {
+    if (!achievementsFromApi) return undefined;
+
+    const achievementsToUpsert = achievementsFromApi.map((ach) => ({
+      api_name: ach.apiname,
+      game: { id: gameId },
+      global_percent: ach.global_percent || 0,
+    }));
+
+    await this.upsert(achievementsToUpsert, ['game', 'api_name'], tm);
+
+    const apiNames = achievementsFromApi.map((a) => a.apiname);
+    return this.findMapByGame(gameId, apiNames, tm);
   }
 }

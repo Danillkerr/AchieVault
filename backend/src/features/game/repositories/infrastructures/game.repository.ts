@@ -21,35 +21,55 @@ export class TypeOrmGameRepository
     super(gameRepo);
   }
 
+  async findByIds(ids: number[], tm?: EntityManager): Promise<Game[]> {
+    if (ids.length === 0) return [];
+    return this.find({ where: { id: In(ids) } }, tm);
+  }
+
+  async findBySteamIds(
+    steamIds: string[],
+    tm?: EntityManager,
+  ): Promise<Game[]> {
+    if (steamIds.length === 0) return [];
+    return this.find({ where: { steam_id: In(steamIds) } }, tm);
+  }
+
+  async findOneBySteamId(
+    steamId: string,
+    options?: { withAchievements?: boolean },
+    tm?: EntityManager,
+  ): Promise<Game | null> {
+    return this.findOne(
+      {
+        where: { steam_id: steamId },
+        relations: options?.withAchievements ? ['achievements'] : undefined,
+      },
+      tm,
+    );
+  }
+
   async findOrCreateBySteamId(
     steamGame: IGameSteamData,
-    transactionManager?: EntityManager,
+    tm?: EntityManager,
   ): Promise<Game> {
-    const manager = this.getManager(transactionManager);
     const steamIdString = steamGame.appid.toString();
 
-    await manager.upsert(
-      Game,
+    await this.upsert(
       {
         steam_id: steamIdString,
         title: steamGame.name,
       },
       ['steam_id'],
+      tm,
     );
 
-    const game = await manager.findOneBy(Game, { steam_id: steamIdString });
+    const game = await this.findOne({ where: { steam_id: steamIdString } }, tm);
     return game!;
   }
 
-  async bulkCreate(
-    gamesData: IGame[],
-    transactionManager?: EntityManager,
-  ): Promise<Game[]> {
+  async bulkCreate(gamesData: IGame[], tm?: EntityManager): Promise<Game[]> {
     if (gamesData.length === 0) return [];
-    const manager = this.getManager(transactionManager);
-
-    const games = manager.create(Game, gamesData);
-    return manager.save(Game, games);
+    return this.saveMany(gamesData, tm);
   }
 
   async findMissingSteamIds(
@@ -73,24 +93,13 @@ export class TypeOrmGameRepository
     return results.map((row) => row.id_from_list);
   }
 
-  async findBySteamIds(
-    steamIds: string[],
-    transactionManager?: EntityManager,
-  ): Promise<Game[]> {
-    if (steamIds.length === 0) return [];
-    const manager = this.getManager(transactionManager);
-
-    return manager.find(Game, {
-      where: {
-        steam_id: In(steamIds),
-      },
-    });
-  }
-
-  async getAggregateStats(gameIds: number[]): Promise<GameStatsResult> {
+  async getAggregateStats(
+    gameIds: number[],
+    tm?: EntityManager,
+  ): Promise<GameStatsResult> {
     if (gameIds.length === 0) return { totalTime: 0, totalAchievements: 0 };
 
-    const manager = this.getManager();
+    const manager = this.getManager(tm);
 
     const { sumTime } = await manager
       .createQueryBuilder(Game, 'g')

@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeepPartial, EntityManager, ILike, In, Repository } from 'typeorm';
-import { User } from 'src/core/entities/user.entity';
+import { EntityManager, ILike, In, Repository } from 'typeorm';
+import { User } from '../../../../core/entities/user.entity';
 import { UserRepository } from '../abstracts/user.repository.abstract';
 import { ISteamProfile } from '../../interfaces/steam-profile.interface';
-import { BaseTypeOrmRepository } from 'src/core/repositories/base.repository';
+import { BaseTypeOrmRepository } from '../../../../core/repositories/base.repository';
+import { QueryDeepPartialEntity } from 'typeorm/browser/query-builder/QueryPartialEntity.js';
 
 @Injectable()
 export class TypeOrmUserRepository
@@ -18,81 +19,72 @@ export class TypeOrmUserRepository
     super(userRepo);
   }
 
-  async findById(
-    id: number,
-    transactionManager?: EntityManager,
-  ): Promise<User | null> {
-    const manager = this.getManager(transactionManager);
-    return manager.findOneBy(User, { id });
+  async findById(id: number, tm?: EntityManager): Promise<User | null> {
+    return this.findOne({ where: { id } }, tm);
   }
 
-  async findAll(transactionManager?: EntityManager): Promise<User[]> {
-    const manager = this.getManager(transactionManager);
-    return manager.find(User);
+  async findAll(tm?: EntityManager): Promise<User[]> {
+    return this.find({}, tm);
   }
 
   async findBySteamId(
     steamId: string,
-    transactionManager?: EntityManager,
+    tm?: EntityManager,
   ): Promise<User | null> {
-    const manager = this.getManager(transactionManager);
-    return manager.findOneBy(User, { steamid: steamId });
+    return this.findOne({ where: { steamid: steamId } }, tm);
   }
 
   async findBySteamIds(
     steamIds: string[],
-    transactionManager?: EntityManager,
+    tm?: EntityManager,
   ): Promise<User[]> {
-    const manager = this.getManager(transactionManager);
-
     if (steamIds.length === 0) return [];
+    return this.find({ where: { steamid: In(steamIds) } }, tm);
+  }
 
-    return manager.find(User, {
-      where: { steamid: In(steamIds) },
-      select: ['id'],
-    });
+  async searchUsers(
+    query: string,
+    limit: number = 10,
+    tm?: EntityManager,
+  ): Promise<User[]> {
+    return this.find(
+      {
+        where: [{ name: ILike(`%${query}%`) }, { steamid: ILike(`${query}%`) }],
+        take: limit,
+        order: { name: 'ASC' },
+      },
+      tm,
+    );
   }
 
   async findOrCreate(
     profileData: ISteamProfile,
-    transactionManager?: EntityManager,
+    tm?: EntityManager,
   ): Promise<User> {
-    const manager = this.getManager(transactionManager);
-    await manager.upsert(User, profileData, ['steamid']);
+    const manager = this.getManager(tm);
+    await manager.upsert(User, profileData, {
+      conflictPaths: ['steamid'],
+      skipUpdateIfNoValuesChanged: true,
+    });
 
-    const user = await this.findBySteamId(
-      profileData.steamid,
-      transactionManager,
-    );
+    const user = await this.findBySteamId(profileData.steamid, tm);
     if (!user) {
-      throw new Error('Failed to find or create user after upsert');
+      throw new InternalServerErrorException(
+        `Could not find user after creating: ${profileData.steamid}`,
+      );
     }
     return user;
   }
 
-  async delete(userId: number): Promise<void> {
-    const manager = this.getManager();
-    await manager.delete(User, userId);
-  }
-
   async update(
     id: number,
-    data: DeepPartial<User>,
-    transactionManager?: EntityManager,
+    data: QueryDeepPartialEntity<User>,
+    tm?: EntityManager,
   ): Promise<void> {
-    const manager = this.getManager(transactionManager);
-    await manager.update(User, id, data);
+    await super.update(id, data, tm);
   }
 
-  async searchUsers(query: string, limit: number = 10): Promise<User[]> {
-    const manager = this.getManager();
-
-    return manager.find(User, {
-      where: [{ name: ILike(`%${query}%`) }, { steamid: ILike(`${query}%`) }],
-      take: limit,
-      order: {
-        name: 'ASC',
-      },
-    });
+  async delete(id: number): Promise<void> {
+    return super.delete(id);
   }
 }

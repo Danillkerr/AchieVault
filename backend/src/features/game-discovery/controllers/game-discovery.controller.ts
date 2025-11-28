@@ -4,8 +4,6 @@ import {
   Param,
   ParseIntPipe,
   Query,
-  UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 import { GameDiscoveryService } from '../services/game-discovery.service';
 

@@ -19,7 +19,7 @@ export class GuideService {
   }
 
   async getGuideById(id: number) {
-    const guide = await this.guideRepo.findOne(id);
+    const guide = await this.guideRepo.findById(id);
     if (!guide) throw new NotFoundException(`Guide ${id} not found`);
     return guide;
   }
@@ -50,7 +50,7 @@ export class GuideService {
   }
 
   private async _getGuideAndCheckOwner(guideId: number, userId: number) {
-    const guide = await this.guideRepo.findOne(guideId);
+    const guide = await this.guideRepo.findById(guideId);
 
     if (!guide) {
       throw new NotFoundException(`Guide with ID ${guideId} not found`);

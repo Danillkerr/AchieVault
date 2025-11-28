@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository, SelectQueryBuilder } from 'typeorm';
 import { Guide } from '../../entities/guide.entity';
 import { GuideRepository } from '../abstracts/guide.repository.abstract';
 import { BaseTypeOrmRepository } from '../../../../core/repositories/base.repository';
@@ -23,39 +23,21 @@ export class TypeOrmGuideRepository
     super(guideRepo);
   }
 
-  async create(dto: CreateGuide): Promise<Guide> {
-    const manager = this.getManager();
-
-    const game = await manager.findOne(Game, {
-      where: { steam_id: dto.steamId },
-      select: ['id'],
-    });
-
-    if (!game) {
-      throw new BadRequestException(
-        `Game with Steam ID ${dto.steamId} not found in database.`,
-      );
-    }
-
-    const newGuide = manager.create(Guide, {
-      title: dto.title,
-      text: dto.text,
-      user: { id: dto.user_id },
-      game: { id: game.id },
-    });
-
-    return manager.save(Guide, newGuide);
+  async findById(id: number, tm?: EntityManager): Promise<Guide | null> {
+    return this.findOne(
+      {
+        where: { id },
+        relations: { user: true, game: true },
+      },
+      tm,
+    );
   }
 
-  async findOne(id: number): Promise<Guide | null> {
-    return this.guideRepo.findOne({
-      where: { id },
-      relations: { user: true, game: true },
-    });
-  }
-
-  async findAll({ page, limit, user_id, game_id }: FindGuidesOptions) {
-    const manager = this.getManager();
+  async findAll(
+    { page, limit, user_id, game_id }: FindGuidesOptions,
+    tm?: EntityManager,
+  ): Promise<{ items: Guide[]; total: number }> {
+    const manager = this.getManager(tm);
 
     const query = this.guideRepo
       .createQueryBuilder('Guide')
@@ -77,39 +59,60 @@ export class TypeOrmGuideRepository
       }
     }
 
-    if (user_id) {
-      query.addSelect(
-        `CASE WHEN Guide.user_id = :targetUserId THEN 0 ELSE 1 END`,
-        'sort_priority',
-      );
+    this.applyCustomSort(query, user_id);
 
-      query.setParameter('targetUserId', user_id);
-
-      query.orderBy('sort_priority', 'ASC');
-
-      query.addOrderBy('Guide.created_at', 'DESC');
-    } else {
-      query.orderBy('Guide.created_at', 'DESC');
-    }
-
-    query.take(limit);
-    query.skip((page - 1) * limit);
+    query.take(limit).skip((page - 1) * limit);
 
     const [items, total] = await query.getManyAndCount();
 
     return { items, total };
   }
 
-  async update(id: number, data: UpdateGuideDto): Promise<Guide> {
-    const manager = this.getManager();
+  async create(dto: CreateGuide, tm?: EntityManager): Promise<Guide> {
+    const manager = this.getManager(tm);
 
-    await manager.update(Guide, id, data);
+    const game = await manager.findOne(Game, {
+      where: { steam_id: dto.steamId },
+      select: ['id'],
+    });
 
-    return (await this.findOne(id))!;
+    if (!game) {
+      throw new BadRequestException(
+        `Game with Steam ID ${dto.steamId} not found in database.`,
+      );
+    }
+
+    return this.save({
+      title: dto.title,
+      text: dto.text,
+      user: { id: dto.user_id },
+      game: { id: game.id },
+    });
   }
 
-  async delete(id: number): Promise<void> {
-    const manager = this.getManager();
-    await manager.delete(Guide, id);
+  async update(
+    id: number,
+    data: UpdateGuideDto,
+    tm?: EntityManager,
+  ): Promise<void> {
+    await super.update(id, data, tm);
+  }
+
+  async delete(id: number, tm?: EntityManager): Promise<void> {
+    await super.delete(id, tm);
+  }
+
+  private applyCustomSort(query: SelectQueryBuilder<Guide>, userId?: number) {
+    if (userId) {
+      query.addSelect(
+        `CASE WHEN Guide.user_id = :targetUserId THEN 0 ELSE 1 END`,
+        'sort_priority',
+      );
+      query.setParameter('targetUserId', userId);
+      query.orderBy('sort_priority', 'ASC');
+      query.addOrderBy('Guide.created_at', 'DESC');
+    } else {
+      query.orderBy('Guide.created_at', 'DESC');
+    }
   }
 }
