@@ -1,4 +1,4 @@
-import { Pagination } from "../../../../components/ui/Pagination/Pagination";
+import { Pagination } from "@/components/ui/Pagination/Pagination";
 import { GameCard, type LibraryGame } from "../gameCard/GameCard";
 import styles from "./GameSelector.module.css";
 

@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
-import { BaseWidget } from "../../../components/widgets/BaseWidget";
-import type { TrendingGame } from "../../../types/game.interface";
+import { BaseWidget } from "@/components/widgets/BaseWidget";
+import type { TrendingGame } from "@/types/game.interface";
 import styles from "./Widgets.module.css";
-import { formatCompactNumber } from "../../../utils/format";
+import { formatCompactNumber } from "@/utils/format";
 
 interface Props {
   games: TrendingGame[];

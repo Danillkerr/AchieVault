@@ -1,11 +1,11 @@
 import { useParams } from "react-router-dom";
-import { useProfileData } from "../../hooks/useProfileData";
-import { useAuth } from "../../context/useAuthContext";
-import { ScreenLoader } from "../../components/feedback/ScreenLoader/ScreenLoader";
+import { useProfileData } from "@/hooks/useProfileData";
+import { useAuth } from "@/context/useAuthContext";
+import { ScreenLoader } from "@/components/feedback/ScreenLoader/ScreenLoader";
 import { ProfileHero } from "./components/profileHero/ProfileHero";
 import { RoadmapBanner } from "./components/roadmapBanner/RoadmapBanner";
 import { RecentGames } from "./components/recentGames/RecentGames";
-import { ProfileSettings } from "../../features/profile/components/settings/ProfileSettings";
+import { ProfileSettings } from "@/features/profile/components/settings/ProfileSettings";
 import styles from "./ProfilePage.module.css";
 
 export const ProfilePage = () => {

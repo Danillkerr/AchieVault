@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import styles from "./Header.module.css";
-import { useAuth } from "../../../context/useAuthContext";
-import { SearchForm } from "../../feedback/SearchForm/SearchForm";
+import { useAuth } from "@/context/useAuthContext";
+import { SearchForm } from "@/components/feedback/SearchForm/SearchForm";
 
 export const Header = () => {
   const { isAuthenticated, isLoading, user } = useAuth();

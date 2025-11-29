@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { UserProfileExtended } from "../../../../types/profile.interface";
+import type { UserProfileExtended } from "@/types/profile.interface";
 import { FriendsModal } from "./friendsModal/FriendsModal";
 import styles from "./ProfileHero.module.css";
 

@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
-import apiClient from "../../../../services/apiClient";
-import { BaseWidget } from "../../../../components/widgets/BaseWidget";
-import { Pagination } from "../../../../components/ui/Pagination/Pagination";
-import type { LeaderboardUser } from "../../../../types/user.interface";
-import type { PaginatedResponse } from "../../../../types/pagination.interface";
+import { useState } from "react";
+import apiClient from "@/services/apiClient";
+import { BaseWidget } from "@/components/widgets/BaseWidget";
+import { Pagination } from "@/components/ui/Pagination/Pagination";
+import type { LeaderboardUser } from "@/types/user.interface";
+import type { PaginatedResponse } from "@/types/pagination.interface";
 import styles from "./RankingTableWidget.module.css";
+import { useQuery } from "@tanstack/react-query";
 
 interface Props {
   title: string;
@@ -12,38 +13,29 @@ interface Props {
 }
 
 export const RankingTableWidget = ({ title, metric }: Props) => {
-  const [data, setData] = useState<LeaderboardUser[]>([]);
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
-
   const ITEMS_PER_PAGE = 10;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const response = await apiClient.get<
-          PaginatedResponse<LeaderboardUser>
-        >("/leaderboard/users", {
+  const query = useQuery({
+    queryKey: ["ranking", metric, page],
+    queryFn: async () => {
+      const response = await apiClient.get<PaginatedResponse<LeaderboardUser>>(
+        "/leaderboard/users",
+        {
           params: {
             sort: metric === "perfect" ? "completed" : "achievement",
             page,
             limit: ITEMS_PER_PAGE,
           },
-        });
+        }
+      );
+      return response.data;
+    },
+    placeholderData: (prev) => prev,
+  });
 
-        setData(response.data.data);
-        setTotalPages(response.data.meta.totalPages);
-      } catch (error) {
-        console.error("Failed to load ranking", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [page, metric]);
+  const data = query.data?.data || [];
+  const totalPages = query.data?.meta.totalPages || 1;
 
   const renderMetricValue = (user: LeaderboardUser) => {
     if (metric === "perfect") {
@@ -71,7 +63,7 @@ export const RankingTableWidget = ({ title, metric }: Props) => {
       </div>
 
       <div className={styles.list}>
-        {isLoading ? (
+        {query.isLoading ? (
           <div className={styles.loadingState}>Loading...</div>
         ) : (
           data.map((user, index) => {
@@ -108,7 +100,7 @@ export const RankingTableWidget = ({ title, metric }: Props) => {
         totalPages={totalPages}
         onNext={() => setPage((p) => p + 1)}
         onPrev={() => setPage((p) => p - 1)}
-        isLoading={isLoading}
+        isLoading={query.isLoading}
       />
     </BaseWidget>
   );

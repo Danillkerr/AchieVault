@@ -1,4 +1,4 @@
-import type { Roadmap } from "../../../types/roadmap.interface";
+import type { Roadmap } from "@/types/roadmap.interface";
 import styles from "./RoadmapComponents.module.css";
 
 interface Props {

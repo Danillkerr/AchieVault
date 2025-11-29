@@ -1,6 +1,6 @@
 import { GuideViewer } from "../GuideViewer";
-import type { Guide } from "../../../../../types/guide.interface";
-import type { User } from "../../../../../types/user.interface";
+import type { Guide } from "@/types/guide.interface";
+import type { User } from "@/types/user.interface";
 import styles from "./GuideDetails.module.css";
 
 interface Props {

@@ -1,4 +1,4 @@
-import type { User } from "../types/user.interface";
+import type { User } from "@/types/user.interface";
 
 export interface FriendRank {
   id: number;

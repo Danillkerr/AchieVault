@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../../../context/useAuthContext";
-import apiClient from "../../../../services/apiClient";
+import { useAuth } from "@/context/useAuthContext";
+import apiClient from "@/services/apiClient";
 import styles from "./ProfileSettings.module.css";
 
 export const ProfileSettings = () => {

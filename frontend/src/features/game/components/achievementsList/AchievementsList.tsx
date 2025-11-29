@@ -1,5 +1,5 @@
 import { AchievementItem } from "../achievementItem/AchievementItem";
-import type { AchievementWithStatus } from "../../../../types/game.interface";
+import type { AchievementWithStatus } from "@/types/game.interface";
 import styles from "./AchievementsList.module.css";
 
 interface Props {

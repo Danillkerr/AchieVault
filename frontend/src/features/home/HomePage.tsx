@@ -1,10 +1,10 @@
 import styles from "./HomePage.module.css";
-import { useAuth } from "../../context/useAuthContext";
-import { ScreenLoader } from "../../components/feedback/ScreenLoader/ScreenLoader";
-import { SearchForm } from "../../components/feedback/SearchForm/SearchForm";
+import { useAuth } from "@/context/useAuthContext";
+import { ScreenLoader } from "@/components/feedback/ScreenLoader/ScreenLoader";
+import { SearchForm } from "@/components/feedback/SearchForm/SearchForm";
 import { LeaderboardWidget } from "./components/LeaderboardWidget";
 import { TrendingWidget } from "./components/TrendingWidget";
-import { useHomeData } from "../../hooks/useHomeData";
+import { useHomeData } from "@/hooks/useHomeData";
 
 const LoginButton = () => {
   const BACKEND_URL =

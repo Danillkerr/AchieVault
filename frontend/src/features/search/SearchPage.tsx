@@ -1,14 +1,12 @@
 import styles from "./SearchPage.module.css";
-import { useSearch } from "../../hooks/useSearch";
-import { SearchForm } from "../../components/feedback/SearchForm/SearchForm";
-import { ScreenLoader } from "../../components/feedback/ScreenLoader/ScreenLoader";
+import { useSearch } from "@/hooks/useSearch";
+import { SearchForm } from "@/components/feedback/SearchForm/SearchForm";
+import { ScreenLoader } from "@/components/feedback/ScreenLoader/ScreenLoader";
 import { UserListWidget } from "./components/UserListWidget";
 import { GameListWidget } from "./components/GameListWidget";
 
 export const SearchPage = () => {
   const { users, games, isLoading, query } = useSearch();
-
-  console.log("SearchPage render:", { users, games, isLoading, query });
 
   if (isLoading) {
     return <ScreenLoader text="Searching..." />;

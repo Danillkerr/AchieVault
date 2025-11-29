@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
-import { ScreenLoader } from "../../components/feedback/ScreenLoader/ScreenLoader";
-import { useRoadmapDetails } from "../../hooks/useRoadmapDetails";
+import { ScreenLoader } from "@/components/feedback/ScreenLoader/ScreenLoader";
+import { useRoadmapDetails } from "@/hooks/useRoadmapDetails";
 import styles from "./RoadmapDetailsPage.module.css";
 
 import { RoadmapHeader } from "./components/RoadmapHeader";
@@ -20,7 +20,7 @@ export const RoadmapDetailsPage = () => {
     handleDeleteRoadmap,
   } = useRoadmapDetails(id);
 
-  if (isLoading) return <ScreenLoader text="Loading roadmap..." />;
+  if (isLoading && !roadmap) return <ScreenLoader text="Loading roadmap..." />;
   if (!roadmap) return <div className={styles.error}>Roadmap not found</div>;
 
   return (

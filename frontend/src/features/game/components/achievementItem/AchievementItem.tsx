@@ -1,5 +1,5 @@
 import styles from "./AchievementItem.module.css";
-import type { AchievementWithStatus } from "../../../../types/game.interface";
+import type { AchievementWithStatus } from "@/types/game.interface";
 
 interface Props {
   item: AchievementWithStatus;

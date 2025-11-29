@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useAuth } from "../../context/useAuthContext";
-import { useGameData } from "../../hooks/useGameData";
-import { ScreenLoader } from "../../components/feedback/ScreenLoader/ScreenLoader";
+import { useAuth } from "@/context/useAuthContext";
+import { useGameData } from "@/hooks/useGameData";
+import { ScreenLoader } from "@/components/feedback/ScreenLoader/ScreenLoader";
 import styles from "./GamePage.module.css";
-import { useGameAchievements } from "../../hooks/useGameAchievements";
-import type { Guide } from "../../types/guide.interface";
-import { useGameGuides } from "../../hooks/useGameGuides";
+import { useGameAchievements } from "@/hooks/useGameAchievements";
+import type { Guide } from "@/types/guide.interface";
+import { useGameGuides } from "@/hooks/useGameGuides";
 import { GameHero } from "./components/gameHero/GameHero";
 import { AchievementsList } from "./components/achievementsList/AchievementsList";
 import { GuideList } from "./components/guide/guideList/GuideList";
@@ -20,8 +20,9 @@ export const GamePage = () => {
   const { gameId } = useParams<{ gameId: string }>();
   const { user, isAuthenticated } = useAuth();
 
-  const { game, isLoading: gameLoading } = useGameData(gameId);
+  const { data: game, isLoading: gameLoading } = useGameData(gameId);
   const { allAchievements, backlog } = useGameAchievements(gameId);
+
   const {
     guides,
     isLoading: guideLoading,
@@ -46,7 +47,6 @@ export const GamePage = () => {
     if (guideMode === "view" && guideViewRef.current) {
       guideViewRef.current.scrollIntoView({
         behavior: "smooth",
-
         block: "start",
       });
     }
@@ -73,6 +73,7 @@ export const GamePage = () => {
         });
       } else if (guideMode === "edit" && selectedGuide) {
         await updateGuide(selectedGuide.id, {
+          ...selectedGuide,
           title: formTitle,
           text: formContent,
         });
@@ -82,21 +83,15 @@ export const GamePage = () => {
       setFormContent("");
       setSelectedGuide(null);
     } catch (error) {
-      alert("Error saving guide" + error);
+      console.error(error);
     }
   };
 
   const handleDeleteGuide = async () => {
     if (!selectedGuide) return;
-    const isConfirmed = window.confirm(
-      "Are you sure you want to delete this guide? This action cannot be undone."
-    );
-
-    if (isConfirmed) {
-      await deleteGuide(selectedGuide.id);
-      setGuideMode("list");
-      setSelectedGuide(null);
-    }
+    await deleteGuide(selectedGuide.id);
+    setGuideMode("list");
+    setSelectedGuide(null);
   };
 
   const handleCancel = () => {

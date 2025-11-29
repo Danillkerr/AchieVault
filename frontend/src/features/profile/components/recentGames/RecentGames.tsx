@@ -1,4 +1,4 @@
-import type { RecentGame } from "../../../../types/profile.interface";
+import type { RecentGame } from "@/types/profile.interface";
 import { Link } from "react-router-dom";
 import styles from "./RecentGames.module.css";
 
@@ -7,6 +7,12 @@ interface Props {
 }
 
 export const RecentGames = ({ games }: Props) => {
+  const getCoverUrl = (logoCode: string) => {
+    if (!logoCode)
+      return "https://images.igdb.com/igdb/image/upload/t_1080p/nocover.png";
+    return `https://images.igdb.com/igdb/image/upload/t_1080p/${logoCode}.jpg`;
+  };
+
   return (
     <section>
       <h2 className={styles.sectionTitle}>Recent Games</h2>
@@ -20,11 +26,7 @@ export const RecentGames = ({ games }: Props) => {
           >
             <div className={styles.coverWrapper}>
               <img
-                src={
-                  "https://images.igdb.com/igdb/image/upload/t_1080p/" +
-                  game.logo +
-                  ".jpg"
-                }
+                src={getCoverUrl(game.logo || "")}
                 alt={game.title}
                 className={styles.gameCover}
               />

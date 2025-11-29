@@ -1,66 +1,68 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/useAuthContext";
-import apiClient from "../../services/apiClient";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/context/useAuthContext";
+import apiClient from "@/services/apiClient";
 import styles from "./CreateRoadmapPage.module.css";
-
-import { RoadmapNameInput } from "./components/roadmapName/RoadmapNameInput";
-import { GameSelector } from "./components/gameSelector/GameSelector";
-import type { LibraryGame } from "./components/gameCard/GameCard";
+import { RoadmapNameInput } from "@/features/createRoadmap/components/roadmapName/RoadmapNameInput";
+import { GameSelector } from "@/features/createRoadmap/components/gameSelector/GameSelector";
+import type { LibraryGame } from "@/features/createRoadmap/components/gameCard/GameCard";
 import { toast } from "react-hot-toast";
 
 interface LibraryResponse {
   data: LibraryGame[];
-  meta: {
-    totalPages: number;
-  };
+  meta: { totalPages: number };
 }
 
 export const CreateRoadmapPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const [title, setTitle] = useState("");
   const [selectedGameIds, setSelectedGameIds] = useState<number[]>([]);
-
-  const [games, setGames] = useState<LibraryGame[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
   const ITEMS_PER_PAGE = 12;
   const MAX_GAMES = 10;
 
   useEffect(() => {
-    if (!user?.id) return;
+    const timer = setTimeout(() => setDebouncedSearch(searchQuery), 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
-    const fetchLibrary = async () => {
-      setIsLoading(true);
-      try {
-        const res = await apiClient.get<LibraryResponse>(
-          `/user-game/${user.id}/library`,
-          {
-            params: {
-              page: page,
-              limit: ITEMS_PER_PAGE,
-              search: searchQuery || undefined,
-            },
-          }
-        );
-        setGames(res.data.data);
-        setTotalPages(res.data.meta.totalPages);
-      } catch (error) {
-        console.error("Failed to fetch library", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const libraryQuery = useQuery({
+    queryKey: ["library", user?.id, page, debouncedSearch],
+    queryFn: async () => {
+      const res = await apiClient.get<LibraryResponse>(
+        `/user-game/${user?.id}/library`,
+        {
+          params: {
+            page,
+            limit: ITEMS_PER_PAGE,
+            search: debouncedSearch || undefined,
+          },
+        }
+      );
+      return res.data;
+    },
+    enabled: !!user?.id,
+    placeholderData: (prev) => prev,
+  });
 
-    const debounceTimer = setTimeout(() => fetchLibrary(), 500);
-    return () => clearTimeout(debounceTimer);
-  }, [page, searchQuery, user?.id]);
+  const createMutation = useMutation({
+    mutationFn: (data: { name: string; gameIds: number[] }) =>
+      apiClient.post("/roadmaps/create", data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+
+      toast.success("Roadmap created successfully!");
+      navigate("/profile");
+    },
+    onError: () => toast.error("Error creating roadmap"),
+  });
 
   const handleSearchChange = (val: string) => {
     setSearchQuery(val);
@@ -75,28 +77,10 @@ export const CreateRoadmapPage = () => {
     });
   };
 
-  const isTitleValid = title.trim().length > 0;
-  const isSelectionValid =
-    selectedGameIds.length >= 3 && selectedGameIds.length <= MAX_GAMES;
-  const isValid = isTitleValid && isSelectionValid;
-
-  const handleSubmit = async () => {
-    if (!isValid) return;
-
-    const toastId = toast.loading("Creating roadmap...");
-
-    try {
-      await apiClient.post("/roadmaps/create", {
-        name: title,
-        gameIds: selectedGameIds,
-      });
-      toast.success("Roadmap created successfully!", { id: toastId });
-      navigate("/profile");
-    } catch (error) {
-      console.error("Failed to create roadmap", error);
-      toast.error("Error creating roadmap", { id: toastId });
-    }
-  };
+  const isValid =
+    title.trim().length > 0 &&
+    selectedGameIds.length >= 3 &&
+    selectedGameIds.length <= MAX_GAMES;
 
   return (
     <div className={styles.page}>
@@ -104,19 +88,18 @@ export const CreateRoadmapPage = () => {
         <div className={styles.cardWrapper}>
           <div className={styles.card}>
             <h1 className={styles.pageTitle}>New Roadmap</h1>
-
             <RoadmapNameInput value={title} onChange={setTitle} />
 
             <GameSelector
-              games={games}
+              games={libraryQuery.data?.data || []}
               selectedIds={selectedGameIds}
               onToggle={toggleGame}
               searchQuery={searchQuery}
               onSearchChange={handleSearchChange}
               page={page}
               setPage={setPage}
-              totalPages={totalPages}
-              isLoading={isLoading}
+              totalPages={libraryQuery.data?.meta.totalPages || 1}
+              isLoading={libraryQuery.isLoading}
               maxGames={MAX_GAMES}
             />
 
@@ -126,10 +109,15 @@ export const CreateRoadmapPage = () => {
               </button>
               <button
                 className={styles.submitBtn}
-                onClick={handleSubmit}
-                disabled={!isValid}
+                onClick={() =>
+                  createMutation.mutate({
+                    name: title,
+                    gameIds: selectedGameIds,
+                  })
+                }
+                disabled={!isValid || createMutation.isPending}
               >
-                Create Roadmap
+                {createMutation.isPending ? "Creating..." : "Create Roadmap"}
               </button>
             </div>
           </div>

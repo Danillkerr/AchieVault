@@ -1,4 +1,4 @@
-import type { Game } from "../../../../types/game.interface";
+import type { Game } from "@/types/game.interface";
 import styles from "./GameHero.module.css";
 
 interface Props {

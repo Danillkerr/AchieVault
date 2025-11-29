@@ -1,6 +1,6 @@
 import { useState } from "react";
-import type { RoadmapGame } from "../../../types/roadmap.interface";
-import { Pagination } from "../../../components/ui/Pagination/Pagination";
+import type { RoadmapGame } from "@/types/roadmap.interface";
+import { Pagination } from "@/components/ui/Pagination/Pagination";
 import styles from "./GamesModal.module.css";
 
 interface Props {

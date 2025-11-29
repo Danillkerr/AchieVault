@@ -1,60 +1,88 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
-import apiClient from "../services/apiClient";
-import type { Roadmap, RoadmapStatus } from "../types/roadmap.interface";
-import { useSync } from "../context/useSyncContext";
+import apiClient from "@/services/apiClient";
+import type { Roadmap, RoadmapStatus } from "@/types/roadmap.interface";
 
 export const useRoadmapDetails = (roadmapId: string | undefined) => {
   const navigate = useNavigate();
-  const { refreshKey } = useSync();
+  const queryClient = useQueryClient();
 
-  const [roadmap, setRoadmap] = useState<Roadmap | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-
+  const [localRoadmap, setLocalRoadmap] = useState<Roadmap | null>(null);
   const [pendingChanges, setPendingChanges] = useState<
     Record<number, RoadmapStatus>
   >({});
 
-  const fetchRoadmap = useCallback(async () => {
-    if (!roadmapId) return;
-    setIsLoading(true);
-    try {
+  const query = useQuery({
+    queryKey: ["roadmap", roadmapId],
+    queryFn: async () => {
       const res = await apiClient.get<Roadmap>(
         `/roadmaps/${roadmapId}/details`
       );
-
-      setRoadmap(res.data);
-    } catch (error) {
-      console.error("Failed to load roadmap", error);
-      toast.error("Could not load roadmap");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [roadmapId]);
+      return res.data;
+    },
+    enabled: !!roadmapId,
+  });
 
   useEffect(() => {
-    fetchRoadmap();
-  }, [fetchRoadmap, refreshKey]);
+    if (query.data) {
+      setLocalRoadmap(query.data);
+    }
+  }, [query.data]);
 
   const handleLocalStatusChange = (
     gameId: number,
     newStatus: RoadmapStatus
   ) => {
-    if (!roadmap) return;
+    if (!localRoadmap) return;
 
-    const updatedGames = roadmap.games.map((g) =>
+    const updatedGames = localRoadmap.games.map((g) =>
       g.id === gameId ? { ...g, status: newStatus } : g
     );
-    setRoadmap({ ...roadmap, games: updatedGames });
+    setLocalRoadmap({ ...localRoadmap, games: updatedGames });
 
     setPendingChanges((prev) => ({
       ...prev,
       [gameId]: newStatus,
     }));
   };
+
+  const saveMutation = useMutation({
+    mutationFn: async (changes: Record<number, RoadmapStatus>) => {
+      const updatePromises = Object.entries(changes).map(([gameId, status]) =>
+        apiClient.patch(`/roadmaps/${roadmapId}/games/${gameId}`, { status })
+      );
+      await Promise.all(updatePromises);
+    },
+    onSuccess: (_, variables) => {
+      const changesCount = Object.keys(variables).length;
+      toast.success(`Updated ${changesCount} games`);
+      setPendingChanges({});
+      setIsEditMode(false);
+
+      queryClient.invalidateQueries({ queryKey: ["roadmap", roadmapId] });
+
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+    },
+    onError: () => {
+      toast.error("Failed to save changes");
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: () => apiClient.delete(`/roadmaps/${roadmapId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+
+      toast.success("Roadmap deleted");
+      navigate("/profile");
+    },
+    onError: () => {
+      toast.error("Failed to delete roadmap");
+    },
+  });
 
   const toggleEditMode = async () => {
     if (!isEditMode) {
@@ -68,47 +96,20 @@ export const useRoadmapDetails = (roadmapId: string | undefined) => {
       return;
     }
 
-    setIsSaving(true);
-    const toastId = toast.loading("Saving changes...");
-
-    try {
-      const updatePromises = Object.entries(pendingChanges).map(
-        ([gameId, status]) =>
-          apiClient.patch(`/roadmaps/${roadmapId}/games/${gameId}`, { status })
-      );
-
-      await Promise.all(updatePromises);
-
-      toast.success(`Updated ${changesCount} games`, { id: toastId });
-      setPendingChanges({});
-      setIsEditMode(false);
-    } catch (error) {
-      console.error("Failed to save updates", error);
-      toast.error("Failed to save changes", { id: toastId });
-    } finally {
-      setIsSaving(false);
-    }
+    saveMutation.mutate(pendingChanges);
   };
 
-  const handleDeleteRoadmap = async () => {
+  const handleDeleteRoadmap = () => {
     if (!window.confirm("Are you sure you want to delete this roadmap?"))
       return;
-
-    try {
-      await apiClient.delete(`/roadmaps/${roadmapId}`);
-      toast.success("Roadmap deleted");
-      navigate("/profile");
-    } catch (error) {
-      console.error("Failed to delete roadmap", error);
-      toast.error("Failed to delete roadmap");
-    }
+    deleteMutation.mutate();
   };
 
   return {
-    roadmap,
-    isLoading,
+    roadmap: localRoadmap,
+    isLoading: query.isLoading,
     isEditMode,
-    isSaving,
+    isSaving: saveMutation.isPending,
     handleLocalStatusChange,
     toggleEditMode,
     handleDeleteRoadmap,

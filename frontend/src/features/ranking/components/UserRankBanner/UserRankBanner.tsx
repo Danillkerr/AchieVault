@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import apiClient from "../../../../services/apiClient";
-import { useAuth } from "../../../../context/useAuthContext";
+import { useQuery } from "@tanstack/react-query";
+import apiClient from "@/services/apiClient";
+import { useAuth } from "@/context/useAuthContext";
 import styles from "./UserRankBanner.module.css";
 
 interface RankData {
@@ -10,31 +10,21 @@ interface RankData {
 
 export const UserRankBanner = () => {
   const { user, isAuthenticated } = useAuth();
-  const [ranks, setRanks] = useState<RankData | null>(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (!isAuthenticated || !user?.id) return;
-
-    const fetchMyRank = async () => {
-      try {
-        const response = await apiClient.get<RankData>(
-          "/leaderboard/user/" + user.id
-        );
-        setRanks(response.data);
-      } catch (error) {
-        console.error("Failed to fetch user rank", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMyRank();
-  }, [isAuthenticated, user?.id]);
+  const { data: ranks, isLoading } = useQuery({
+    queryKey: ["userRank", user?.id],
+    queryFn: async () => {
+      const response = await apiClient.get<RankData>(
+        `/leaderboard/user/${user?.id}`
+      );
+      return response.data;
+    },
+    enabled: !!isAuthenticated && !!user?.id,
+  });
 
   if (!isAuthenticated || !user) return null;
 
-  if (loading)
+  if (isLoading)
     return <div className={styles.loadingStub}>Loading your rank...</div>;
 
   if (!ranks) return null;

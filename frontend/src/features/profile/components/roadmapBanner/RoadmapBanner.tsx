@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import styles from "./RoadmapBanner.module.css";
-import type { UserRoadmap } from "../../../../types/profile.interface";
+import type { UserRoadmap } from "@/types/profile.interface";
 
 interface Props {
   roadmap?: UserRoadmap | null;

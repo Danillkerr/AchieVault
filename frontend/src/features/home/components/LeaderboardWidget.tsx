@@ -1,9 +1,6 @@
-import { BaseWidget } from "../../../components/widgets/BaseWidget";
+import { BaseWidget } from "@/components/widgets/BaseWidget";
 import styles from "./Widgets.module.css";
-import type {
-  LeaderboardUsers,
-  LeaderboardUser,
-} from "../../../types/user.interface";
+import type { LeaderboardUsers, LeaderboardUser } from "@/types/user.interface";
 
 interface Props {
   title: string;

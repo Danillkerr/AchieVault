@@ -14,10 +14,7 @@ import type {
 } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { toast } from "react-hot-toast";
-import type {
-  RoadmapGame,
-  RoadmapStatus,
-} from "../../../types/roadmap.interface";
+import type { RoadmapGame, RoadmapStatus } from "@/types/roadmap.interface";
 import styles from "./RoadmapComponents.module.css";
 
 const COLUMNS: { id: RoadmapStatus; label: string; styleClass: string }[] = [

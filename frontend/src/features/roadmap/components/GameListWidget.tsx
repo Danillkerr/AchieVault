@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { RoadmapGame } from "../../../types/roadmap.interface";
+import type { RoadmapGame } from "@/types/roadmap.interface";
 import { GamesModal } from "./GamesModal";
 import styles from "./RoadmapComponents.module.css";
 

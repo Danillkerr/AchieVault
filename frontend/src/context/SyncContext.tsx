@@ -1,44 +1,58 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useRef } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import apiClient from "../services/apiClient";
+import apiClient from "@/services/apiClient";
 import { SyncContext } from "./useSyncContext";
 
 export const SyncProvider = ({ children }: { children: React.ReactNode }) => {
-  const [isSyncing, setIsSyncingState] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const queryClient = useQueryClient();
+
   const isSyncingRef = useRef(false);
 
-  const triggerSync = useCallback(async () => {
-    if (isSyncingRef.current) return;
-
-    isSyncingRef.current = true;
-    setIsSyncingState(true);
-
-    try {
+  const syncMutation = useMutation({
+    mutationFn: async () => {
       const res = await apiClient.post<{ status: string }>(`/sync/`);
-
-      if (res.data.status === "queued") {
+      return res.data;
+    },
+    onSuccess: (data) => {
+      if (data.status === "queued") {
         const toastId = toast.loading("Updating data from Steam...");
 
         setTimeout(() => {
           isSyncingRef.current = false;
-          setIsSyncingState(false);
           toast.success("Data updated!", { id: toastId });
+
           setRefreshKey((prev) => prev + 1);
+          queryClient.invalidateQueries({ queryKey: ["profile"] });
+          queryClient.invalidateQueries({ queryKey: ["achievements"] });
+          queryClient.invalidateQueries({ queryKey: ["library"] });
         }, 5000);
       } else {
         isSyncingRef.current = false;
-        setIsSyncingState(false);
       }
-    } catch (error) {
+    },
+    onError: (error) => {
       console.error("Sync error", error);
       isSyncingRef.current = false;
-      setIsSyncingState(false);
-    }
-  }, []);
+      toast.error("Sync failed");
+    },
+  });
+
+  const triggerSync = async () => {
+    if (isSyncingRef.current) return;
+    isSyncingRef.current = true;
+    syncMutation.mutate();
+  };
 
   return (
-    <SyncContext.Provider value={{ triggerSync, refreshKey, isSyncing }}>
+    <SyncContext.Provider
+      value={{
+        triggerSync,
+        refreshKey,
+        isSyncing: syncMutation.isPending || isSyncingRef.current,
+      }}
+    >
       {children}
     </SyncContext.Provider>
   );

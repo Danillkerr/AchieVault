@@ -1,82 +1,74 @@
-import { useState, useEffect, useCallback } from "react";
-import apiClient from "../services/apiClient";
-import { useAuth } from "../context/useAuthContext";
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import apiClient from "@/services/apiClient";
+import { useAuth } from "@/context/useAuthContext";
 import type {
   Guide,
   CreateGuideDto,
   GuidesResponse,
-} from "../types/guide.interface";
+} from "@/types/guide.interface";
 import { toast } from "react-hot-toast";
 
 export const useGameGuides = (gameId: string | undefined) => {
   const { user } = useAuth();
-
-  const [guides, setGuides] = useState<Guide[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const queryClient = useQueryClient();
 
-  const fetchGuides = useCallback(async () => {
-    if (!gameId) return;
-
-    setIsLoading(true);
-    try {
+  const query = useQuery({
+    queryKey: ["guides", gameId, page],
+    queryFn: async () => {
       const res = await apiClient.get<GuidesResponse>(`/guides/`, {
-        params: { page: page, limit: 5, gameId, userId: user?.id },
+        params: { page, limit: 5, gameId, userId: user?.id },
       });
-      setGuides(res.data.data);
-      setTotalPages(res.data.meta.totalPages);
-    } catch (error) {
-      console.error("Failed to fetch guides", error);
-      toast.error("Could not load guides");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [gameId, page, user?.id]);
+      return res.data;
+    },
+    enabled: !!gameId,
+    placeholderData: (previousData) => previousData,
+  });
 
-  useEffect(() => {
-    fetchGuides();
-  }, [fetchGuides]);
+  const createMutation = useMutation({
+    mutationFn: (data: CreateGuideDto) => apiClient.post(`/guides/`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["guides", gameId] });
+      setPage(1);
+      toast.success("Guide published successfully!");
+    },
+    onError: () => toast.error("Failed to create guide"),
+  });
 
-  const createGuide = async (data: CreateGuideDto) => {
-    if (!gameId) return;
-    const toastId = toast.loading("Publishing guide...");
-    await apiClient.post(`/guides/`, data);
-    setPage(1);
-    await fetchGuides();
-    toast.success("Guide published successfully!", { id: toastId });
-  };
+  const updateMutation = useMutation({
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: number;
+      data: Pick<CreateGuideDto, "title" | "text">;
+    }) => apiClient.put(`/guides/${id}`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["guides", gameId] });
+      toast.success("Guide updated!");
+    },
+    onError: () => toast.error("Failed to update guide"),
+  });
 
-  const updateGuide = async (
-    guideId: number,
-    inputData: Pick<CreateGuideDto, "title" | "text">
-  ) => {
-    const toastId = toast.loading("Updating guide...");
-    await apiClient.put(`/guides/${guideId}`, {
-      title: inputData.title,
-      text: inputData.text,
-    });
-    await fetchGuides();
-    toast.success("Guide updated successfully!", { id: toastId });
-  };
-
-  const deleteGuide = async (guideId: number) => {
-    if (!window.confirm("Are you sure you want to delete this guide?")) return;
-    const toastId = toast.loading("Deleting guide...");
-    await apiClient.delete(`/guides/${guideId}`);
-    await fetchGuides();
-    toast.success("Guide deleted successfully!", { id: toastId });
-  };
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => apiClient.delete(`/guides/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["guides", gameId] });
+      toast.success("Guide deleted!");
+    },
+    onError: () => toast.error("Failed to delete guide"),
+  });
 
   return {
-    guides,
-    isLoading,
-    createGuide,
-    updateGuide,
-    deleteGuide,
+    guides: query.data?.data || [],
+    totalPages: query.data?.meta.totalPages || 1,
+    isLoading: query.isLoading,
     page,
     setPage,
-    totalPages,
+    createGuide: createMutation.mutateAsync,
+    updateGuide: (id: number, data: Guide) =>
+      updateMutation.mutateAsync({ id, data }),
+    deleteGuide: deleteMutation.mutateAsync,
   };
 };

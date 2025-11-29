@@ -1,6 +1,6 @@
 import { useState } from "react";
-import type { FriendRank } from "../../../../../types/profile.interface";
-import { Pagination } from "../../../../../components/ui/Pagination/Pagination";
+import type { FriendRank } from "@/types/profile.interface";
+import { Pagination } from "@/components/ui/Pagination/Pagination";
 import styles from "./FriendsModal.module.css";
 
 interface Props {

@@ -1,6 +1,6 @@
-import { Pagination } from "../../../../../components/ui/Pagination/Pagination";
-import type { Guide } from "../../../../../types/guide.interface";
-import type { User } from "../../../../../types/user.interface";
+import { Pagination } from "@/components/ui/Pagination/Pagination";
+import type { Guide } from "@/types/guide.interface";
+import type { User } from "@/types/user.interface";
 import styles from "./GuideList.module.css";
 
 interface Props {
