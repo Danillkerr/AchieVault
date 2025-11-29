@@ -20,25 +20,74 @@ This project is built using a **monorepo** approach, housing the backend and fro
 
 ## Key Features
 
-- **Steam Integration:** Securely log in with your Steam account (via Steam OpenID) to automatically sync your game library and achievement progress.
-- **Achievement Monitoring:** Get a clear, detailed view of all your achievements for any given game.
-- **The "Roadmap" Feature:** Create an ordered "roadmap" (a sequential queue) of games you plan to complete.
-- **Leaderboards:** Compare your progress (achievements, 100% completions) against friends and the global community.
-- **Guides:** Users can add their own guides or watch other's to help others on their road to 100%.
+- **Steam Synchronization:**
+  - Automatically syncs your game library, playtime, and achievement progress from Steam.
+  - Background synchronization using Redis and Bull queues to keep data up-to-date without impacting performance.
+- **Discovery & Search:**
+  - Search for games (powered by IGDB & Steam) and other users.
+  - View detailed game stats, including "Time to Beat" and achievements.
+- **Game Roadmaps:**
+  - Plan your backlog using a **Kanban Board** system.
+  - Drag and drop games between _Planned_, _In Progress_, _Deferred_, and _Completed_ statuses.
+  - Receive automated game recommendations based on completion time and difficulty.
+- **Global & Friend Leaderboards:**
+  - **Completionists:** Ranked by the number of 100% completed games.
+  - **Hunters:** Ranked by the total number of unlocked achievements.
+  - Compare your stats directly with friends via the Friend Ranking modal.
+- **Community Guides:**
+  - Write and share rich-text guides for specific games using the integrated editor.
+  - View guides created by other users to help unlock difficult achievements
+- **Localization:**
+  - Fully localized interface supporting **English** and **Ukrainian** (UA).
 
 ## Tech Stack
 
-This project is built as a Monolithic Application with a RESTful API.
+### Frontend
 
-| Area         | Technology               | Description                                                                                                                  |
-| :----------- | :----------------------- | :--------------------------------------------------------------------------------------------------------------------------- |
-| **Backend**  | **Nest.js** (TypeScript) | A progressive Node.js framework for building efficient and scalable server-side applications that can adhering OOP & SOLID.. |
-| **Frontend** | **React** (TypeScript)   | A component-based library for building user interfaces.                                                                      |
-| **Database** | **PostgreSQL**           | A powerful, open-source object-relational database system.                                                                   |
-| **ORM**      | **TypeORM**              | An ORM that runs in Node.js and can be used with TypeScript.                                                                 |
-| **Auth**     | **Passport.js**          | Flexible and modular authentication middleware for Node.js.                                                                  |
+- **Core:** React 19, TypeScript, Vite
+- **State Management:** TanStack Query (React Query)
+- **Routing:** React Router v7
+- **UI Components:** CSS Modules, React Hot Toast (Notifications)
+- **Interactivity:** @dnd-kit (Kanban board drag-and-drop), React Quill New (Guide editor)
+- **Internationalization:** i18next
 
-| External APIs     | Description                                                      |
-| :---------------- | :--------------------------------------------------------------- |
-| **Steam Web API** | For user auth (OpenID) and syncing game/achievement data.        |
-| **IGDB API**      | For fetching rich game metadata (covers, genres, ratings, etc.). |
+### Backend
+
+- **Framework:** NestJS
+- **Database:** PostgreSQL (with TypeORM)
+- **Queue & Caching:** Redis, Bull (for handling background sync jobs)
+- **Authentication:** Passport.js (JWT + Steam OpenID Strategy)
+- **External APIs:**
+  - **Steam Web API:** For user profiles, libraries, and achievement data.
+  - **IGDB API:** For high-quality game metadata, covers, and rating info.
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v18+)
+- pnpm (recommended) or npm
+- PostgreSQL
+- Redis
+
+## Installation & Running
+
+1. Backend:
+
+   ```bash
+   cd backend
+   pnpm install
+   nest start
+
+   ```
+
+2. Frontend:
+   ```bash
+   cd frontend
+   pnpm install
+   pnpm run dev
+   ```
+
+## License
+
+This project is open-source and available under the MIT License.
