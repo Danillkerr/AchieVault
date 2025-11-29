@@ -1,10 +1,11 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { IGame } from 'src/core/interfaces/games/game.interface';
 import { ExternalGameRepository } from 'src/core/repositories/external-game.repository.abstract';
-import { UserSourceRepository } from 'src/core/repositories/user-source.repository.abstract';
 import { GameService } from '../../game/service/game.service';
 import { AchievementService } from '../../game/service/achievement.service';
-
+import { DataSource } from 'typeorm';
+import { ISteamPlayerAchievement } from '../../../core/interfaces/games/player-achievement.interface';
+import { IAchievementSource } from 'src/core/repositories/interfaces/achievement-source.interface';
 @Injectable()
 export class GameEnrichmentService {
   private readonly logger = new Logger(GameEnrichmentService.name);
@@ -13,17 +14,20 @@ export class GameEnrichmentService {
   constructor(
     @Inject(ExternalGameRepository)
     private readonly externalGameRepo: ExternalGameRepository,
-    private readonly userSource: UserSourceRepository,
+    @Inject(IAchievementSource)
+    private readonly achievementSource: IAchievementSource,
     private readonly gameService: GameService,
     private readonly achievementService: AchievementService,
+    private readonly dataSource: DataSource,
   ) {}
   async enrichGames(steamIds: string[]): Promise<IGame[]> {
-    if (!steamIds || steamIds.length === 0) return [];
+    const uniqueIds = [...new Set(steamIds)].filter(Boolean);
+    if (uniqueIds.length === 0) return [];
 
-    this.logger.log(`Enriching ${steamIds.length} games (Data + Schema)...`);
+    this.logger.log(`Start enriching ${uniqueIds.length} games...`);
     const createdGames: IGame[] = [];
 
-    for (const id of steamIds) {
+    for (const id of uniqueIds) {
       const savedGame = await this.processSingleGame(id);
 
       if (savedGame) {
@@ -41,13 +45,13 @@ export class GameEnrichmentService {
   }
 
   private async processSingleGame(steamId: string): Promise<IGame | null> {
-    this.logger.log(`Processing game ${steamId}...`);
+    const start = Date.now();
 
     try {
       const [gameData, achievementsSchema, globalStats] = await Promise.all([
         this.externalGameRepo.getGameDetailsBySteamId(steamId),
-        this.userSource.getGameSchema(steamId),
-        this.userSource.getAchievementPercentages(steamId),
+        this.achievementSource.getGameSchema(steamId),
+        this.achievementSource.getAchievementPercentages(steamId),
       ]);
 
       if (!gameData) {
@@ -55,42 +59,55 @@ export class GameEnrichmentService {
         return null;
       }
 
-      const [savedGame] = await this.gameService.bulkCreateGames([gameData]);
+      const savedGame = await this.dataSource.transaction(async (manager) => {
+        const [game] = await this.gameService.bulkCreateGames(
+          [gameData],
+          manager,
+        );
 
-      if (achievementsSchema && achievementsSchema.length > 0) {
-        const statsMap = new Map();
-        if (globalStats) {
-          globalStats.forEach((s: any) => statsMap.set(s.name, s.percent));
+        if (achievementsSchema && achievementsSchema.length > 0) {
+          const achievementsDto = this.mergeAchievementsData(
+            achievementsSchema,
+            globalStats,
+          );
+
+          await this.achievementService.bulkUpsertAchievements(
+            game.id,
+            achievementsDto,
+            manager,
+          );
+          this.logger.debug(
+            `   + Linked ${achievementsDto.length} achievements`,
+          );
         }
+        return game;
+      });
 
-        const achievementsDto = achievementsSchema.map((ach) => {
-          const percent = +statsMap.get(ach.name) || 0;
-
-          return {
-            apiname: ach.name,
-            displayName: ach.displayName,
-            global_percent: percent,
-
-            achieved: 0,
-            unlocktime: 0,
-          };
-        });
-
-        await this.achievementService.bulkUpsertAchievements123(
-          savedGame.id,
-          achievementsDto,
-        );
-
-        this.logger.log(
-          `Saved ${achievementsDto.length} achievements with stats for ${savedGame.title}`,
-        );
-      }
-
+      const duration = Date.now() - start;
+      this.logger.log(`Synced game "${savedGame.title}" (${duration}ms)`);
       return savedGame;
     } catch (e) {
       this.logger.error(`Failed to sync game ${steamId}`, e);
       return null;
     }
+  }
+
+  private mergeAchievementsData(
+    schema: any[],
+    globalStats: any[],
+  ): ISteamPlayerAchievement[] {
+    const statsMap = new Map<string, number>();
+
+    if (Array.isArray(globalStats)) {
+      globalStats.forEach((s) => statsMap.set(s.name, s.percent));
+    }
+
+    return schema.map((ach) => ({
+      apiname: ach.name,
+      global_percent: statsMap.get(ach.name) || 0,
+      achieved: 0,
+      unlocktime: 0,
+    }));
   }
 
   private _wait(ms: number): Promise<void> {

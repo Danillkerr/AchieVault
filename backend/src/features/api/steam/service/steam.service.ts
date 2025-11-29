@@ -23,11 +23,7 @@ export class SteamService extends BaseApiService {
     baseUrl?: string,
   ): Promise<any> {
     const url = `${baseUrl || this.steamConfig.steamApiUrl}/${endpoint}`;
-    try {
-      return await this._makeGetRequest(url, params);
-    } catch (error) {
-      return `Error querying Steam API: ${error}`;
-    }
+    return await this._makeGetRequest(url, params);
   }
 
   async getOwnedGamesFromSteam(steamid: string): Promise<ISourceGameSummary> {
@@ -56,9 +52,20 @@ export class SteamService extends BaseApiService {
       format: 'json',
     };
 
-    const response = await this._querySteam(endpoint, params);
+    try {
+      const response = await this._querySteam(endpoint, params);
 
-    return response?.playerstats;
+      return response?.playerstats;
+    } catch (error: any) {
+      if (error.response && error.response.status === 400) {
+        this.logger.debug(`Game ${appId} has no achievements stats.`);
+        return null;
+      }
+      this.logger.error(
+        `Failed to get achievements for ${appId}: ${error.message}`,
+      );
+      return null;
+    }
   }
 
   async getFriendList(steamId: string): Promise<string[]> {

@@ -1,11 +1,20 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { UserSourceRepository } from 'src/core/repositories/user-source.repository.abstract';
 import { SteamService } from '../service/steam.service';
 import { ISourceGameSummary } from 'src/core/interfaces/user-source/user-source.interface';
 import { ISteamPlayerAchievement } from 'src/core/interfaces/games/player-achievement.interface';
+import { IGameSource } from 'src/core/repositories/interfaces/game-source.interface';
+import { ISocialSource } from 'src/core/repositories/interfaces/social-source.interface';
+import { IAchievementSource } from 'src/core/repositories/interfaces/achievement-source.interface';
+import { IGameDiscoverySource } from 'src/core/repositories/interfaces/game-discovery-source.interface';
 
 @Injectable()
-export class SteamUserSourceRepository implements UserSourceRepository {
+export class SteamUserSourceRepository
+  implements
+    IGameSource,
+    ISocialSource,
+    IAchievementSource,
+    IGameDiscoverySource
+{
   private readonly logger = new Logger(SteamUserSourceRepository.name);
   constructor(private readonly steamApi: SteamService) {}
 
@@ -62,7 +71,7 @@ export class SteamUserSourceRepository implements UserSourceRepository {
     }
   }
 
-  async getTopPlayedGames(limit: number): Promise<any[]> {
+  async getTopGames(limit: number): Promise<any[]> {
     try {
       return await this.steamApi.getTopPlayedGames(limit);
     } catch (error) {

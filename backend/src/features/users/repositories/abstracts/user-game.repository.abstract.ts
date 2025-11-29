@@ -40,5 +40,6 @@ export abstract class UserGameRepository {
   abstract findByGameIds(
     userId: number,
     gameIds: number[],
+    transactionManager?: EntityManager,
   ): Promise<UserGame[]>;
 }

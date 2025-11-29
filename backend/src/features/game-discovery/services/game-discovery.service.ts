@@ -1,12 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { GameService } from '../../game/service/game.service';
 import { GameEnrichmentService } from '../../sync/services/game-enrichment.service';
-import { UserSourceRepository } from '../../../core/repositories/user-source.repository.abstract';
 import { Inject } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
 import { UserAchievementService } from '../../users/services/user-achievement.service';
 import { UsersService } from '../../users/services/users.service';
+import { IGameSource } from 'src/core/repositories/interfaces/game-source.interface';
+import { IGameDiscoverySource } from 'src/core/repositories/interfaces/game-discovery-source.interface';
+import { IAchievementSource } from 'src/core/repositories/interfaces/achievement-source.interface';
 
 @Injectable()
 export class GameDiscoveryService {
@@ -14,7 +16,11 @@ export class GameDiscoveryService {
   private readonly IGDB_DELAY_MS = 1100;
 
   constructor(
-    private userSource: UserSourceRepository,
+    @Inject(IGameSource) private readonly gameSource: IGameSource,
+    @Inject(IGameDiscoverySource)
+    private readonly gameDiscoverySource: IGameDiscoverySource,
+    @Inject(IAchievementSource)
+    private readonly achievementSource: IAchievementSource,
     private readonly gameService: GameService,
     private readonly enrichmentService: GameEnrichmentService,
     private readonly userAchievementService: UserAchievementService,
@@ -23,14 +29,14 @@ export class GameDiscoveryService {
   ) {}
 
   async getPopularGames() {
-    const topGames = await this.userSource.getTopPlayedGames(15);
+    const topGames = await this.gameDiscoverySource.getTopGames(15);
     const steamIds = topGames.map((g) => g.steamId);
 
     return this._processGamesList(steamIds, topGames);
   }
 
   async searchGames(query: string) {
-    const searchResults = await this.userSource.searchGames(query);
+    const searchResults = await this.gameDiscoverySource.searchGames(query);
     const steamIds = searchResults.map((g) => g.id);
 
     return this._processGamesList(steamIds, searchResults);
@@ -74,8 +80,8 @@ export class GameDiscoveryService {
     if (cached) return cached;
 
     const [schema, globalStats] = await Promise.all([
-      this.userSource.getGameSchema(steamId),
-      this.userSource.getAchievementPercentages(steamId),
+      this.achievementSource.getGameSchema(steamId),
+      this.achievementSource.getAchievementPercentages(steamId),
     ]);
 
     if (!schema || schema.length === 0) return [];
@@ -102,7 +108,7 @@ export class GameDiscoveryService {
 
     if (!user) return [];
 
-    const recentGames = await this.userSource.getRecentlyPlayedGames(
+    const recentGames = await this.gameSource.getRecentlyPlayedGames(
       user.steamid,
       5,
     );

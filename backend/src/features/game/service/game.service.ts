@@ -12,14 +12,25 @@ export class GameService {
     private readonly gameRepository: GameRepository,
   ) {}
 
-  async findOrCreateGame(
-    steamGame: IGameSteamData,
+  async findBySteamIds(
+    steamIds: string[],
     transactionManager?: EntityManager,
-  ): Promise<Game> {
-    return this.gameRepository.findOrCreateBySteamId(
-      steamGame,
-      transactionManager,
-    );
+  ): Promise<Game[]> {
+    return this.gameRepository.findBySteamIds(steamIds, transactionManager);
+  }
+
+  async findOneBySteamId(
+    steamId: string,
+    options?: { withAchievements?: boolean },
+  ): Promise<Game | null> {
+    return this.gameRepository.findOneBySteamId(steamId, options);
+  }
+
+  async findByIds(
+    ids: number[],
+    transactionManager?: EntityManager,
+  ): Promise<Game[]> {
+    return this.gameRepository.findByIds(ids, transactionManager);
   }
 
   async findNewSteamIds(
@@ -32,21 +43,24 @@ export class GameService {
     );
   }
 
+  async getRoadmapStats(gameIds: number[]) {
+    return this.gameRepository.getAggregateStats(gameIds);
+  }
+
+  async findOrCreateGame(
+    steamGame: IGameSteamData,
+    transactionManager?: EntityManager,
+  ): Promise<Game> {
+    return this.gameRepository.findOrCreateBySteamId(
+      steamGame,
+      transactionManager,
+    );
+  }
+
   async bulkCreateGames(
     gamesData: IGame[],
     transactionManager?: EntityManager,
   ): Promise<Game[]> {
     return this.gameRepository.bulkCreate(gamesData, transactionManager);
-  }
-
-  async findBySteamIds(
-    steamIds: string[],
-    transactionManager?: EntityManager,
-  ): Promise<Game[]> {
-    return this.gameRepository.findBySteamIds(steamIds, transactionManager);
-  }
-
-  async getRoadmapStats(gameIds: number[]) {
-    return this.gameRepository.getAggregateStats(gameIds);
   }
 }

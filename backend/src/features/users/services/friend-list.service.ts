@@ -17,7 +17,15 @@ export class FriendListService {
     friendSteamIds: string[],
     transactionManager?: EntityManager,
   ): Promise<void> {
-    const friendUsers = await this.userRepo.findBySteamIds(friendSteamIds);
+    if (friendSteamIds.length === 0) return;
+
+    const friendUsers = await this.userRepo.findBySteamIds(
+      friendSteamIds,
+      transactionManager,
+    );
+
+    if (friendUsers.length === 0) return;
+
     const friendUserIds = friendUsers.map((user) => user.id);
 
     await this.friendshipRepo.bulkCreate(

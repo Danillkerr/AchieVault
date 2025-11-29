@@ -26,30 +26,28 @@ export class UsersService {
     return this.userRepository.findAll(transactionManager);
   }
 
-  async findUsersBySteamId(
+  async findBySteamIds(
     steamIds: string[],
     transactionManager?: EntityManager,
   ): Promise<User[]> {
     return this.userRepository.findBySteamIds(steamIds, transactionManager);
   }
 
-  async findUsersBySteamIds(
-    steamIds: string[],
-    transactionManager?: EntityManager,
-  ): Promise<User[]> {
-    return this.userRepository.findBySteamIds(steamIds, transactionManager);
+  async search(query: string): Promise<User[]> {
+    const sanitizedQuery = query?.trim();
+
+    if (!sanitizedQuery || sanitizedQuery.length < 2) {
+      return [];
+    }
+
+    return this.userRepository.searchUsers(sanitizedQuery);
   }
 
   async findOrCreateBySteamProfile(
-    { id, displayName, photos }: IProfileFromSteam,
+    steamProfile: IProfileFromSteam,
     transactionManager?: EntityManager,
   ): Promise<User> {
-    const profileDto: ISteamProfile = {
-      steamid: id,
-      name: displayName,
-      avatar: photos[2]?.value,
-    };
-
+    const profileDto = this.mapSteamProfileToDto(steamProfile);
     return this.userRepository.findOrCreate(profileDto, transactionManager);
   }
 
@@ -65,11 +63,13 @@ export class UsersService {
     await this.userRepository.delete(userId);
   }
 
-  async search(query: string): Promise<User[]> {
-    if (!query || query.trim().length < 2) {
-      return [];
-    }
+  private mapSteamProfileToDto(profile: IProfileFromSteam): ISteamProfile {
+    const avatarUrl = profile.photos?.[2]?.value;
 
-    return this.userRepository.searchUsers(query.trim());
+    return {
+      steamid: profile.id,
+      name: profile.displayName,
+      avatar: avatarUrl,
+    };
   }
 }

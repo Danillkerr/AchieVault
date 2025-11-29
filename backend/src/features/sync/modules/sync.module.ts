@@ -11,6 +11,10 @@ import { CronSyncProcessor } from '../processors/cron-sync.processor';
 import { UserSyncProcessor } from '../processors/user-sync.processor';
 import { LeaderboardModule } from 'src/features/leaderboard/modules/leaderboard.module';
 import { RoadmapModule } from 'src/features/roadmap/modules/roadmap.module';
+import { RoadmapRecalcStep } from '../steps/roadmap-recalc.step';
+import { FriendsSyncStep } from '../steps/friends-sync.step';
+import { AchievementsSyncStep } from '../steps/achievements-sync.step';
+import { GamesSyncStep } from '../steps/games-sync.step';
 
 @Module({
   imports: [
@@ -53,6 +57,28 @@ import { RoadmapModule } from 'src/features/roadmap/modules/roadmap.module';
     GameEnrichmentService,
     CronSyncProcessor,
     UserSyncProcessor,
+
+    GamesSyncStep,
+    AchievementsSyncStep,
+    FriendsSyncStep,
+    RoadmapRecalcStep,
+    {
+      provide: 'SYNC_STEPS',
+      useFactory: (
+        gamesStep: GamesSyncStep,
+        achievementsStep: AchievementsSyncStep,
+        friendsStep: FriendsSyncStep,
+        roadmapStep: RoadmapRecalcStep,
+      ) => {
+        return [gamesStep, achievementsStep, friendsStep, roadmapStep];
+      },
+      inject: [
+        GamesSyncStep,
+        AchievementsSyncStep,
+        FriendsSyncStep,
+        RoadmapRecalcStep,
+      ],
+    },
   ],
   exports: [BullModule, SyncService, GameEnrichmentService],
 })

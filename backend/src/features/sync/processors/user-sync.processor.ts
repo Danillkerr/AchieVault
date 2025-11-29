@@ -23,7 +23,6 @@ export class UserSyncProcessor {
       const user = await this.UsersService.findById(userId);
       if (user) {
         await this.syncService.syncUser(user);
-        await this.roadmapService.refreshRoadmap(user.id);
       }
     } catch (error) {
       this.logger.error(`User Sync failed for user ${userId}`, error);

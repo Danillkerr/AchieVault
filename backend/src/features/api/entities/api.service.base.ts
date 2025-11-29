@@ -17,7 +17,7 @@ export abstract class BaseApiService {
       );
       return response.data;
     } catch (error) {
-      this.logger.error(`Failed POST request to ${url}: ${error.message}`);
+      throw error;
     }
   }
 
@@ -28,7 +28,7 @@ export abstract class BaseApiService {
       );
       return response.data;
     } catch (error) {
-      this.logger.error(`Failed GET request to ${url}: ${error.message}`);
+      throw error;
     }
   }
 }

@@ -4,6 +4,7 @@ import { Inject } from '@nestjs/common/decorators/core/inject.decorator';
 import { IAchievementToUpsert } from '../interfaces/user-achievement.interface';
 import { EntityManager } from 'typeorm';
 import { ISteamPlayerAchievement } from 'src/core/interfaces/games/player-achievement.interface';
+import { UserAchievement } from '../entities/user-achievement.entity';
 
 @Injectable()
 export class UserAchievementService {
@@ -11,6 +12,35 @@ export class UserAchievementService {
     @Inject(UserAchievementRepository)
     private readonly userAchievementRepo: UserAchievementRepository,
   ) {}
+
+  async getUserProgress(
+    userId: number,
+    steamId: string,
+    transactionManager?: EntityManager,
+  ): Promise<UserAchievement[]> {
+    return this.userAchievementRepo.findAchievementByGame(
+      userId,
+      steamId,
+      transactionManager,
+    );
+  }
+
+  async getUnlockedAchievementsCount(
+    userId: number,
+    gameIds: number[],
+  ): Promise<Map<number, number>> {
+    const rawData = await this.userAchievementRepo.countUnlockedByGameIds(
+      userId,
+      gameIds,
+    );
+
+    const map = new Map<number, number>();
+    rawData.forEach((row) => {
+      map.set(Number(row.game_id), Number(row.cnt));
+    });
+
+    return map;
+  }
 
   async bulkUpsertFromSteam(
     userId: number,
@@ -40,34 +70,5 @@ export class UserAchievementService {
       achievementsToUpsert,
       transactionManager,
     );
-  }
-
-  async getUserProgress(
-    userId: number,
-    steamId: string,
-    transactionManager?: EntityManager,
-  ): Promise<any[]> {
-    return this.userAchievementRepo.findAchievementByGame(
-      userId,
-      steamId,
-      transactionManager,
-    );
-  }
-
-  async getUnlockedAchievementsCount(
-    userId: number,
-    gameIds: number[],
-  ): Promise<Map<number, number>> {
-    const rawData = await this.userAchievementRepo.countUnlockedByGameIds(
-      userId,
-      gameIds,
-    );
-
-    const map = new Map<number, number>();
-    rawData.forEach((row) => {
-      map.set(Number(row.game_id), Number(row.cnt));
-    });
-
-    return map;
   }
 }

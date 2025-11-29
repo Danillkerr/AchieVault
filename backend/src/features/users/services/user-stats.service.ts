@@ -15,18 +15,12 @@ export class UserStatsService {
 
   async recalculateUserStats(
     userId: number,
-    transactionManager?: EntityManager,
+    tm?: EntityManager,
   ): Promise<void> {
-    const totalAchievements =
-      await this.userAchievementRepo.countCompletedAchievements(
-        userId,
-        transactionManager,
-      );
-
-    const completedGames = await this.userAchievementRepo.countCompletedGames(
-      userId,
-      transactionManager,
-    );
+    const [totalAchievements, completedGames] = await Promise.all([
+      this.userAchievementRepo.countCompletedAchievements(userId, tm),
+      this.userAchievementRepo.countCompletedGames(userId, tm),
+    ]);
 
     await this.userRepo.update(
       userId,
@@ -34,19 +28,15 @@ export class UserStatsService {
         achievement_count: totalAchievements,
         completed_count: completedGames,
       },
-      transactionManager,
+      tm,
     );
   }
 
   async updateUserGameCount(
     userId: number,
     count: number,
-    transactionManager?: EntityManager,
+    tm?: EntityManager,
   ): Promise<void> {
-    await this.userRepo.update(
-      userId,
-      { game_count: count },
-      transactionManager,
-    );
+    await this.userRepo.update(userId, { game_count: count }, tm);
   }
 }
