@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
 import styles from "./Footer.module.css";
+import { useTranslation } from "react-i18next";
 
 export const Footer = () => {
+  const { t } = useTranslation();
   const currentYear = new Date().getFullYear();
 
   return (
@@ -15,22 +17,22 @@ export const Footer = () => {
 
           <nav className={styles.nav}>
             <Link to="/" className={styles.link}>
-              Home
+              {t("nav.home")}
             </Link>
             <Link to="/global-ranking" className={styles.link}>
-              Ranking
+              {t("nav.ranking")}
             </Link>
             <Link to="/search" className={styles.link}>
-              Search
+              {t("nav.search")}
             </Link>
 
             <span className={styles.dot}>•</span>
 
             <Link to="/terms" className={styles.link}>
-              Terms
+              {t("nav.terms")}
             </Link>
             <Link to="/privacy" className={styles.link}>
-              Privacy
+              {t("nav.privacy")}
             </Link>
 
             <a
@@ -39,7 +41,7 @@ export const Footer = () => {
               rel="noopener noreferrer"
               className={styles.link}
             >
-              License (MIT)
+              {t("nav.license")} (MIT)
             </a>
           </nav>
         </div>
@@ -51,7 +53,7 @@ export const Footer = () => {
             <span>&copy; {currentYear} AchieVault</span>
             <span className={styles.separator}>|</span>
             <span className={styles.poweredBy}>
-              Data provided by{" "}
+              {t("footer.data_provided")}{" "}
               <a
                 href="https://steamcommunity.com/dev"
                 target="_blank"
@@ -70,11 +72,7 @@ export const Footer = () => {
             </span>
           </div>
 
-          <p className={styles.disclaimer}>
-            Steam and the Steam logo are trademarks of Valve Corporation. All
-            other trademarks are property of their respective owners. Not
-            affiliated with Valve.
-          </p>
+          <p className={styles.disclaimer}>{t("footer.disclaimer")}</p>
         </div>
       </div>
     </footer>

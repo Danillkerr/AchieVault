@@ -1,11 +1,13 @@
 import type { Roadmap } from "@/types/roadmap.interface";
 import styles from "./RoadmapComponents.module.css";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   roadmap: Roadmap;
 }
 
 export const RoadmapHeader = ({ roadmap }: Props) => {
+  const { t } = useTranslation();
   return (
     <div className={styles.headerContainer}>
       <div className={styles.headerTop}>
@@ -13,13 +15,16 @@ export const RoadmapHeader = ({ roadmap }: Props) => {
 
         <div className={styles.headerBadges}>
           <div className={styles.statBox}>
-            <span className={styles.statLabel}>Est. Time</span>
+            <span className={styles.statLabel}>{t("roadmap.est_time")}</span>
             <span className={styles.statValue}>
-              ~{(roadmap.total_etc / 60 / 60).toFixed(1)}h
+              ~{(roadmap.total_etc / 60 / 60).toFixed(1)}
+              {t("common.hours_short")}
             </span>
           </div>
           <div className={styles.statBox}>
-            <span className={styles.statLabel}>Total Achievs</span>
+            <span className={styles.statLabel}>
+              {t("profile.achievements")}
+            </span>
             <span className={styles.statValue}>
               {roadmap.total_achievements}
             </span>
@@ -27,7 +32,7 @@ export const RoadmapHeader = ({ roadmap }: Props) => {
         </div>
       </div>
 
-      <h3 className={styles.recTitle}>Next Recommended:</h3>
+      <h3 className={styles.recTitle}>{t("roadmap.next_recommended")}</h3>
 
       {roadmap.recommended_game && (
         <div className={styles.recCard}>
@@ -46,20 +51,21 @@ export const RoadmapHeader = ({ roadmap }: Props) => {
             <div className={styles.recStats}>
               <div className={styles.recStatItem}>
                 <strong>
-                  {(roadmap.recommended_game.playtime / 60).toFixed(1)}h
+                  {(roadmap.recommended_game.playtime / 60).toFixed(1)}
+                  {t("common.hours_short")}
                 </strong>
-                <span>Played</span>
+                <span>{t("profile.playtime")}</span>
               </div>
               <div className={styles.recStatItem}>
                 <strong>
                   {roadmap.recommended_game.achievements_unlocked}/
                   {roadmap.recommended_game.achievements_total}
                 </strong>
-                <span>Achievs</span>
+                <span>{t("profile.achievements")}</span>
               </div>
               <div className={styles.recStatItem}>
                 <strong>{roadmap.recommended_game.completion_percent}%</strong>
-                <span>Done</span>
+                <span>{t("roadmap.done")}</span>
               </div>
             </div>
           </div>

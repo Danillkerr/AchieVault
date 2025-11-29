@@ -7,8 +7,11 @@ import { RoadmapBanner } from "./components/roadmapBanner/RoadmapBanner";
 import { RecentGames } from "./components/recentGames/RecentGames";
 import { ProfileSettings } from "@/features/profile/components/settings/ProfileSettings";
 import styles from "./ProfilePage.module.css";
+import { useTranslation } from "react-i18next";
 
 export const ProfilePage = () => {
+  const { t } = useTranslation();
+
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
 
@@ -17,8 +20,9 @@ export const ProfilePage = () => {
 
   const { profile, isLoading } = useProfileData(targetUserId);
 
-  if (isLoading) return <ScreenLoader text="Loading profile..." />;
-  if (!profile) return <div className={styles.error}>Profile not found</div>;
+  if (isLoading) return <ScreenLoader text={t("loading.profile")} />;
+  if (!profile)
+    return <div className={styles.error}>{t("profile.not_found")}</div>;
 
   return (
     <div className={styles.pageContainer}>

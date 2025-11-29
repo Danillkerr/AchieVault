@@ -8,8 +8,10 @@ import type {
   GuidesResponse,
 } from "@/types/guide.interface";
 import { toast } from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 export const useGameGuides = (gameId: string | undefined) => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [page, setPage] = useState(1);
   const queryClient = useQueryClient();
@@ -31,9 +33,9 @@ export const useGameGuides = (gameId: string | undefined) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["guides", gameId] });
       setPage(1);
-      toast.success("Guide published successfully!");
+      toast.success(t("toasts.guide_published"));
     },
-    onError: () => toast.error("Failed to create guide"),
+    onError: () => toast.error(t("toasts.guide_create_error")),
   });
 
   const updateMutation = useMutation({
@@ -46,18 +48,18 @@ export const useGameGuides = (gameId: string | undefined) => {
     }) => apiClient.put(`/guides/${id}`, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["guides", gameId] });
-      toast.success("Guide updated!");
+      toast.success(t("toasts.guide_updated"));
     },
-    onError: () => toast.error("Failed to update guide"),
+    onError: () => toast.error(t("toasts.guide_update_error")),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => apiClient.delete(`/guides/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["guides", gameId] });
-      toast.success("Guide deleted!");
+      toast.success(t("toasts.guide_deleted"));
     },
-    onError: () => toast.error("Failed to delete guide"),
+    onError: () => toast.error(t("toasts.guide_delete_error")),
   });
 
   return {

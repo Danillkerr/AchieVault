@@ -6,6 +6,7 @@ import type { LeaderboardUser } from "@/types/user.interface";
 import type { PaginatedResponse } from "@/types/pagination.interface";
 import styles from "./RankingTableWidget.module.css";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   title: string;
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export const RankingTableWidget = ({ title, metric }: Props) => {
+  const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const ITEMS_PER_PAGE = 10;
 
@@ -40,7 +42,7 @@ export const RankingTableWidget = ({ title, metric }: Props) => {
   const renderMetricValue = (user: LeaderboardUser) => {
     if (metric === "perfect") {
       return (
-        <div className={styles.statValue} title="100% Games">
+        <div className={styles.statValue} title={t("ranking.perfect_games")}>
           {user.user.completed_count}
         </div>
       );
@@ -55,16 +57,18 @@ export const RankingTableWidget = ({ title, metric }: Props) => {
   return (
     <BaseWidget title={title} className={styles.widgetContainer}>
       <div className={styles.tableHeader}>
-        <span className={styles.colRank}>Rank</span>
-        <span className={styles.colUser}>User</span>
+        <span className={styles.colRank}>{t("ranking.table_rank")}</span>
+        <span className={styles.colUser}>{t("ranking.table_user")}</span>
         <span className={styles.colStat}>
-          {metric === "perfect" ? "100% Compl." : "Achievements"}
+          {metric === "perfect"
+            ? t("ranking.table_compl")
+            : t("ranking.table_total")}
         </span>
       </div>
 
       <div className={styles.list}>
         {query.isLoading ? (
-          <div className={styles.loadingState}>Loading...</div>
+          <div className={styles.loadingState}>{t("loading")}</div>
         ) : (
           data.map((user, index) => {
             const realRank = (page - 1) * ITEMS_PER_PAGE + index + 1;

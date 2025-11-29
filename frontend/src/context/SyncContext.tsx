@@ -3,8 +3,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import apiClient from "@/services/apiClient";
 import { SyncContext } from "./useSyncContext";
+import { useTranslation } from "react-i18next";
 
 export const SyncProvider = ({ children }: { children: React.ReactNode }) => {
+  const { t } = useTranslation();
   const [refreshKey, setRefreshKey] = useState(0);
   const queryClient = useQueryClient();
 
@@ -17,12 +19,11 @@ export const SyncProvider = ({ children }: { children: React.ReactNode }) => {
     },
     onSuccess: (data) => {
       if (data.status === "queued") {
-        const toastId = toast.loading("Updating data from Steam...");
+        const toastId = toast.loading(t("toasts.sync_loading"));
 
         setTimeout(() => {
           isSyncingRef.current = false;
-          toast.success("Data updated!", { id: toastId });
-
+          toast.success(t("toasts.sync_success"), { id: toastId });
           setRefreshKey((prev) => prev + 1);
           queryClient.invalidateQueries({ queryKey: ["profile"] });
           queryClient.invalidateQueries({ queryKey: ["achievements"] });
@@ -35,7 +36,7 @@ export const SyncProvider = ({ children }: { children: React.ReactNode }) => {
     onError: (error) => {
       console.error("Sync error", error);
       isSyncingRef.current = false;
-      toast.error("Sync failed");
+      toast.error(t("toasts.sync_error"));
     },
   });
 

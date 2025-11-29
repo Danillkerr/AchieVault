@@ -3,14 +3,17 @@ import { BaseWidget } from "@/components/widgets/BaseWidget";
 import type { TrendingGame } from "@/types/game.interface";
 import styles from "./Widgets.module.css";
 import { formatCompactNumber } from "@/utils/format";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   games: TrendingGame[];
 }
 
 export const TrendingWidget = ({ games }: Props) => {
+  const { t } = useTranslation();
+
   return (
-    <BaseWidget title="Trending Games">
+    <BaseWidget title={t("home.trending")}>
       <div className={styles.list}>
         {games.map((game) => {
           if (game.title !== "Unknown Title") {
@@ -34,7 +37,8 @@ export const TrendingWidget = ({ games }: Props) => {
                   <span className={styles.gameTitle}>{game.title}</span>
                   <span className={styles.onlineCount}>
                     <span className={styles.onlineDot}></span>
-                    {formatCompactNumber(game.currentPlayers)} playing
+                    {formatCompactNumber(game.currentPlayers)}{" "}
+                    {t("home.playing")}
                   </span>
                 </div>
               </Link>

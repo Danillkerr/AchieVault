@@ -2,14 +2,16 @@ import { useState } from "react";
 import type { RoadmapGame } from "@/types/roadmap.interface";
 import { GamesModal } from "./GamesModal";
 import styles from "./RoadmapComponents.module.css";
+import { useTranslation } from "react-i18next";
 
 export const GameListWidget = ({ games }: { games: RoadmapGame[] }) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
       <div className={styles.listWidget}>
-        <h3 className={styles.widgetTitle}>Game List</h3>
+        <h3 className={styles.widgetTitle}>{t("roadmap.game_list")}</h3>
         <div className={styles.widgetContent}>
           {games.slice(0, 4).map((game) => (
             <div key={game.id} className={styles.widgetRow}>
@@ -28,7 +30,7 @@ export const GameListWidget = ({ games }: { games: RoadmapGame[] }) => {
           ))}
         </div>
         <button className={styles.moreBtn} onClick={() => setIsOpen(true)}>
-          View All ({games.length})
+          {t("roadmap.view_all")} ({games.length})
         </button>
       </div>
       <GamesModal

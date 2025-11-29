@@ -1,4 +1,5 @@
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { ScreenLoader } from "@/components/feedback/ScreenLoader/ScreenLoader";
 import { useRoadmapDetails } from "@/hooks/useRoadmapDetails";
 import styles from "./RoadmapDetailsPage.module.css";
@@ -8,6 +9,7 @@ import { GameListWidget } from "./components/GameListWidget";
 import { KanbanBoard } from "./components/KanbanBoard";
 
 export const RoadmapDetailsPage = () => {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
 
   const {
@@ -20,8 +22,10 @@ export const RoadmapDetailsPage = () => {
     handleDeleteRoadmap,
   } = useRoadmapDetails(id);
 
-  if (isLoading && !roadmap) return <ScreenLoader text="Loading roadmap..." />;
-  if (!roadmap) return <div className={styles.error}>Roadmap not found</div>;
+  if (isLoading && !roadmap)
+    return <ScreenLoader text={t("loading.roadmap")} />;
+  if (!roadmap)
+    return <div className={styles.error}>{t("common.not_found")}</div>;
 
   return (
     <div className={styles.page}>
@@ -37,7 +41,7 @@ export const RoadmapDetailsPage = () => {
 
         <div className={styles.boardSection}>
           <div className={styles.boardHeader}>
-            <h2 className={styles.sectionTitle}>Progress Board</h2>
+            <h2 className={styles.sectionTitle}>{t("roadmap.board_title")}</h2>
 
             <div className={styles.modeToggle}>
               <span
@@ -45,7 +49,7 @@ export const RoadmapDetailsPage = () => {
                   !isEditMode ? styles.modeLabelActive : styles.modeLabel
                 }
               >
-                View
+                {t("roadmap.view_mode")}
               </span>
 
               <button
@@ -63,7 +67,7 @@ export const RoadmapDetailsPage = () => {
                   isEditMode ? styles.modeLabelActive : styles.modeLabel
                 }
               >
-                {isSaving ? "Saving..." : "Edit"}
+                {isSaving ? t("roadmap.saving") : t("roadmap.edit_mode")}
               </span>
             </div>
           </div>
@@ -81,7 +85,7 @@ export const RoadmapDetailsPage = () => {
             onClick={handleDeleteRoadmap}
             disabled={isEditMode || isSaving}
           >
-            Delete Roadmap
+            {t("roadmap.delete_roadmap")}
           </button>
         </div>
       </div>

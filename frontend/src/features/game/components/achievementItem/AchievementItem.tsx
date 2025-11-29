@@ -1,11 +1,13 @@
 import styles from "./AchievementItem.module.css";
 import type { AchievementWithStatus } from "@/types/game.interface";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   item: AchievementWithStatus;
 }
 
 export const AchievementItem = ({ item }: Props) => {
+  const { t } = useTranslation();
   const currentIcon = item.isUnlocked ? item.icon : item.iconGray;
 
   return (
@@ -34,7 +36,8 @@ export const AchievementItem = ({ item }: Props) => {
 
         {item.isUnlocked && item.obtainedDate && (
           <span className={styles.unlockDate}>
-            Unlocked: {item.obtainedDate.toLocaleDateString()}
+            {t("game.achievements.unlocked")}:{" "}
+            {item.obtainedDate.toLocaleDateString()}
           </span>
         )}
       </div>

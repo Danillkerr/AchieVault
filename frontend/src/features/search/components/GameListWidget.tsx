@@ -2,12 +2,14 @@ import { Link } from "react-router-dom";
 import { BaseWidget } from "../../../components/widgets/BaseWidget";
 import type { Game } from "../../../types/game.interface";
 import styles from "./SearchWidgets.module.css";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   games: Game[];
 }
 
 export const GameListWidget = ({ games }: Props) => {
+  const { t } = useTranslation();
   const getRatingColorClass = (rating: number) => {
     if (rating >= 80) return styles.ratingHigh;
     if (rating >= 50) return styles.ratingMid;
@@ -15,15 +17,15 @@ export const GameListWidget = ({ games }: Props) => {
   };
 
   return (
-    <BaseWidget title="Games">
+    <BaseWidget title={t("search.games")}>
       <div className={`${styles.tableHeader} ${styles.gridGames}`}>
-        <span>Game Title</span>
-        <span className={styles.colRight}>Rating</span>
+        <span>{t("search.games")}</span>
+        <span className={styles.colRight}>{t("search.rating")}</span>
       </div>
 
       <div className={styles.list}>
         {games.length === 0 ? (
-          <div className={styles.emptyState}>No games found</div>
+          <div className={styles.emptyState}>{t("search.no_games")}</div>
         ) : (
           games.map(
             (game) =>

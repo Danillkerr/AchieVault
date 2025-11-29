@@ -1,11 +1,15 @@
 import type { Game } from "@/types/game.interface";
 import styles from "./GameHero.module.css";
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 
 interface Props {
   game: Game;
 }
 
 export const GameHero = ({ game }: Props) => {
+  const { t } = useTranslation();
+
   const displayRating = Math.round(game.rating);
 
   const getRatingClass = (rating: number) => {
@@ -49,7 +53,10 @@ export const GameHero = ({ game }: Props) => {
 
             {game.time_to_beat > 0 && (
               <div className={styles.statBadge} title="Average time to beat">
-                <span>~{(game.time_to_beat / 60 / 60).toFixed(1)} hours</span>
+                <span>
+                  ~{(game.time_to_beat / 60 / 60).toFixed(1)}{" "}
+                  {t("common.hours")}
+                </span>
               </div>
             )}
 
@@ -69,16 +76,19 @@ export const GameHero = ({ game }: Props) => {
                 rel="noopener noreferrer"
                 className={styles.igdbLink}
               >
-                IGDB Info
+                {t("game.igdb_link")} ↗
               </a>
             )}
           </div>
 
           <div className={styles.summaryBox}>
-            <h3 className={styles.summaryTitle}>About</h3>
+            <h3 className={styles.summaryTitle}>{t("game.about")}</h3>
             <p className={styles.summaryText}>
               {game.summary || "No description available."}
             </p>
+            {i18n.language === "uk" && (
+              <p className={styles.contentNotice}>{t("game.content_notice")}</p>
+            )}
           </div>
         </div>
       </div>

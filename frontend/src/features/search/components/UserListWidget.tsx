@@ -1,23 +1,26 @@
-import { BaseWidget } from "../../../components/widgets/BaseWidget";
-import type { User } from "../../../types/user.interface";
+import { BaseWidget } from "@/components/widgets/BaseWidget";
+import type { User } from "@/types/user.interface";
 import styles from "./SearchWidgets.module.css";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   users: User[];
 }
 
 export const UserListWidget = ({ users }: Props) => {
+  const { t } = useTranslation();
+
   return (
-    <BaseWidget title="Users">
+    <BaseWidget title={t("search.users")}>
       <div className={`${styles.tableHeader} ${styles.gridUsers}`}>
-        <span>User</span>
-        <span className={styles.colRight}>100%</span>
-        <span className={styles.colRight}>Total</span>
+        <span>{t("search.users")}</span>
+        <span className={styles.colRight}>{t("search.games")}</span>
+        <span className={styles.colRight}>{t("search.achievements")}</span>
       </div>
 
       <div className={styles.list}>
         {users.length === 0 ? (
-          <div className={styles.emptyState}>No users found</div>
+          <div className={styles.emptyState}>{t("search.no_users")}</div>
         ) : (
           users.map((user) => (
             <div key={user.id} className={`${styles.row} ${styles.gridUsers}`}>

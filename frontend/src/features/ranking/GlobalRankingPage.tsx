@@ -1,15 +1,15 @@
 import styles from "./GlobalRankingPage.module.css";
 import { RankingTableWidget } from "./components/RankingTableWidget/RankingTableWidget";
 import { UserRankBanner } from "./components/UserRankBanner/UserRankBanner";
+import { useTranslation } from "react-i18next";
 
 export const GlobalRankingPage = () => {
+  const { t } = useTranslation();
   return (
     <div className={styles.page}>
       <section className={styles.heroSection}>
-        <h1 className={styles.title}>Global Ranking</h1>
-        <p className={styles.subtitle}>
-          Top players by completion and dedication
-        </p>
+        <h1 className={styles.title}>{t("ranking.title")}</h1>
+        <p className={styles.subtitle}>{t("ranking.subtitle")}</p>
         <div
           style={{
             marginTop: "30px",
@@ -26,13 +26,13 @@ export const GlobalRankingPage = () => {
         <div className={styles.grid}>
           <div className={styles.tableWrapper}>
             <RankingTableWidget
-              title="Completionists Leaderboard"
+              title={t("ranking.completionists")}
               metric="perfect"
             />
           </div>
 
           <div className={styles.tableWrapper}>
-            <RankingTableWidget title="Achievement Hunters" metric="total" />
+            <RankingTableWidget title={t("ranking.hunters")} metric="total" />
           </div>
         </div>
       </section>

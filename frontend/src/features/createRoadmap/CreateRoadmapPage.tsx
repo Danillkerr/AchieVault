@@ -8,6 +8,7 @@ import { RoadmapNameInput } from "@/features/createRoadmap/components/roadmapNam
 import { GameSelector } from "@/features/createRoadmap/components/gameSelector/GameSelector";
 import type { LibraryGame } from "@/features/createRoadmap/components/gameCard/GameCard";
 import { toast } from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 interface LibraryResponse {
   data: LibraryGame[];
@@ -15,6 +16,7 @@ interface LibraryResponse {
 }
 
 export const CreateRoadmapPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -58,10 +60,10 @@ export const CreateRoadmapPage = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
 
-      toast.success("Roadmap created successfully!");
+      toast.success(t("toasts.roadmap_created"));
       navigate("/profile");
     },
-    onError: () => toast.error("Error creating roadmap"),
+    onError: () => toast.error(t("toasts.create_error")),
   });
 
   const handleSearchChange = (val: string) => {
@@ -87,7 +89,9 @@ export const CreateRoadmapPage = () => {
       <div className="container">
         <div className={styles.cardWrapper}>
           <div className={styles.card}>
-            <h1 className={styles.pageTitle}>New Roadmap</h1>
+            <h1 className={styles.pageTitle}>
+              {t("roadmap.create_page_title")}
+            </h1>
             <RoadmapNameInput value={title} onChange={setTitle} />
 
             <GameSelector
@@ -105,7 +109,7 @@ export const CreateRoadmapPage = () => {
 
             <div className={styles.footer}>
               <button className={styles.cancelBtn} onClick={() => navigate(-1)}>
-                Cancel
+                {t("common.cancel")}
               </button>
               <button
                 className={styles.submitBtn}
@@ -117,7 +121,9 @@ export const CreateRoadmapPage = () => {
                 }
                 disabled={!isValid || createMutation.isPending}
               >
-                {createMutation.isPending ? "Creating..." : "Create Roadmap"}
+                {createMutation.isPending
+                  ? t("common.saving")
+                  : t("roadmap.create_btn")}
               </button>
             </div>
           </div>

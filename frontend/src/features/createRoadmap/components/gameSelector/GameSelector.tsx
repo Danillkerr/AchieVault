@@ -1,6 +1,7 @@
 import { Pagination } from "@/components/ui/Pagination/Pagination";
 import { GameCard, type LibraryGame } from "../gameCard/GameCard";
 import styles from "./GameSelector.module.css";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   games: LibraryGame[];
@@ -30,6 +31,7 @@ export const GameSelector = ({
   isLoading,
   maxGames,
 }: Props) => {
+  const { t } = useTranslation();
   const isMaxReached = selectedIds.length >= maxGames;
   const isValidCount =
     selectedIds.length >= 3 && selectedIds.length <= maxGames;
@@ -38,7 +40,7 @@ export const GameSelector = ({
     <div className={styles.section}>
       <div className={styles.gamesHeader}>
         <label className={styles.label}>
-          Select Games
+          {t("roadmap.select_games")}
           <span
             className={isValidCount ? styles.countValid : styles.countInvalid}
           >
@@ -49,7 +51,7 @@ export const GameSelector = ({
         <input
           type="text"
           className={styles.searchInput}
-          placeholder="Search library..."
+          placeholder={t("roadmap.search_library")}
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
         />
@@ -57,9 +59,11 @@ export const GameSelector = ({
 
       <div className={styles.gamesContainer}>
         {isLoading ? (
-          <div className={styles.loading}>Loading library...</div>
+          <div className={styles.loading}>{t("roadmap.loading_library")}</div>
         ) : games.length === 0 ? (
-          <div className={styles.emptySearch}>No games found.</div>
+          <div className={styles.emptySearch}>
+            {t("roadmap.no_games_found")}
+          </div>
         ) : (
           <div className={styles.gamesGrid}>
             {games.map((game) => {

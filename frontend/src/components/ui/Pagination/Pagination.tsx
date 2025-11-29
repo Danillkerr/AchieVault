@@ -1,4 +1,5 @@
 import styles from "./Pagination.module.css";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   page: number;
@@ -15,6 +16,7 @@ export const Pagination = ({
   onPrev,
   isLoading,
 }: Props) => {
+  const { t } = useTranslation();
   return (
     <div className={styles.pagination}>
       <button
@@ -22,11 +24,11 @@ export const Pagination = ({
         onClick={onPrev}
         disabled={page <= 1 || isLoading}
       >
-        « Prev
+        {t("pagination.prev")}
       </button>
 
       <span className={styles.info}>
-        Page {page} of {totalPages || 1}
+        {t("pagination.info", { page, total: totalPages || 1 })}
       </span>
 
       <button
@@ -34,7 +36,7 @@ export const Pagination = ({
         onClick={onNext}
         disabled={page >= totalPages || isLoading}
       >
-        Next »
+        {t("pagination.next")}
       </button>
     </div>
   );

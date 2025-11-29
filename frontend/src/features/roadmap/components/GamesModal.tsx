@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { RoadmapGame } from "@/types/roadmap.interface";
 import { Pagination } from "@/components/ui/Pagination/Pagination";
 import styles from "./GamesModal.module.css";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   isOpen: boolean;
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export const GamesModal = ({ isOpen, onClose, games }: Props) => {
+  const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const itemsPerPage = 5;
 
@@ -25,7 +27,7 @@ export const GamesModal = ({ isOpen, onClose, games }: Props) => {
     <div className={styles.modalOverlay} onClick={onClose}>
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
         <div className={styles.modalHeader}>
-          <h3>Full Game List</h3>
+          <h3>{t("roadmap.game_list")}</h3>
           <button className={styles.closeBtn} onClick={onClose}>
             ×
           </button>

@@ -1,6 +1,7 @@
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import styles from "./GuideComponents.module.css";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   value: string;
@@ -8,6 +9,8 @@ interface Props {
 }
 
 export const GuideEditor = ({ value, onChange }: Props) => {
+  const { t } = useTranslation();
+
   const modules = {
     toolbar: [
       [{ header: [2, 3, false] }],
@@ -26,7 +29,7 @@ export const GuideEditor = ({ value, onChange }: Props) => {
         onChange={onChange}
         modules={modules}
         className={styles.quill}
-        placeholder="Write your guide... Drag & drop images or paste YouTube links."
+        placeholder={t("game.guides.form_description")}
       />
     </div>
   );

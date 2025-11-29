@@ -1,5 +1,6 @@
 import { GuideEditor } from "../GuideEditor";
 import styles from "./GuideForm.module.css";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   mode: "create" | "edit";
@@ -20,6 +21,7 @@ export const GuideForm = ({
   onSave,
   onCancel,
 }: Props) => {
+  const { t } = useTranslation();
   const titleLength = title.trim().length;
   const isTitleValid = titleLength >= 5;
 
@@ -36,16 +38,20 @@ export const GuideForm = ({
   return (
     <div className={styles.createForm}>
       <div className={styles.formHeader}>
-        <h3>{mode === "create" ? "Write a new Guide" : "Edit Guide"}</h3>
+        <h3>
+          {mode === "create"
+            ? t("game.guides.form_title_create")
+            : t("game.guides.form_title_edit")}
+        </h3>
         <button className={styles.cancelBtn} onClick={onCancel}>
-          Cancel
+          {t("game.guides.back")}
         </button>
       </div>
 
       <div className={styles.inputGroup}>
         <input
           type="text"
-          placeholder="Guide Title"
+          placeholder={t("game.guides.input_placeholder")}
           className={`${styles.titleInput} ${
             title.length > 0 && !isTitleValid ? styles.invalidInput : ""
           }`}
@@ -56,7 +62,7 @@ export const GuideForm = ({
           <span
             className={isTitleValid ? styles.textSuccess : styles.textError}
           >
-            Min 5 chars ({titleLength})
+            {t("game.guides.min_chars", { count: 5 })} ({titleLength})
           </span>
         </div>
       </div>
@@ -74,10 +80,11 @@ export const GuideForm = ({
           <span
             className={isContentValid ? styles.textSuccess : styles.textError}
           >
-            Min 20 chars ({contentLength})
+            {t("game.guides.min_chars", { count: 20 })} ({contentLength})
           </span>
           <span className={isSizeValid ? styles.textSuccess : styles.textError}>
-            Size: {totalSizeMB.toFixed(2)}MB / 10MB
+            {t("game.guides.max_size", { size: "10MB" })} (
+            {totalSizeMB.toFixed(2)}MB)
           </span>
         </div>
       </div>
@@ -86,9 +93,11 @@ export const GuideForm = ({
         className={styles.submitBtn}
         onClick={onSave}
         disabled={!isFormValid}
-        title={!isFormValid ? "Please fix errors above" : ""}
+        title={!isFormValid ? t("game.guides.form_invalid") : ""}
       >
-        {mode === "create" ? "Publish Guide" : "Save Changes"}
+        {mode === "create"
+          ? t("game.guides.publish")
+          : t("game.guides.save_changes")}
       </button>
     </div>
   );

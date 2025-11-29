@@ -12,11 +12,13 @@ import { AchievementsList } from "./components/achievementsList/AchievementsList
 import { GuideList } from "./components/guide/guideList/GuideList";
 import { GuideForm } from "./components/guide/guideForm/GuideForm";
 import { GuideDetails } from "./components/guide/guideDetails/GuideDetails";
+import { useTranslation } from "react-i18next";
 
 type GuideMode = "list" | "view" | "create" | "edit";
 type Tab = "achievements" | "backlog" | "guide";
 
 export const GamePage = () => {
+  const { t } = useTranslation();
   const { gameId } = useParams<{ gameId: string }>();
   const { user, isAuthenticated } = useAuth();
 
@@ -52,13 +54,14 @@ export const GamePage = () => {
     }
   }, [guideMode]);
 
-  if (gameLoading) return <ScreenLoader text="Loading game data..." />;
-  if (!game) return <div className={styles.error}>Game not found</div>;
-  if (!gameId) return <div className={styles.error}>Invalid game ID</div>;
+  if (gameLoading) return <ScreenLoader text={t("loading.game")} />;
+  if (!game) return <div className={styles.error}>{t("common.not_found")}</div>;
+  if (!gameId)
+    return <div className={styles.error}>{t("common.not_found")}</div>;
 
   const handleSaveGuide = async () => {
     if (!formTitle.trim() || !formContent.trim()) {
-      alert("Title and content are required");
+      alert(t("game.guides.fill_all_fields"));
       return;
     }
 
@@ -125,7 +128,7 @@ export const GamePage = () => {
             }`}
             onClick={() => setActiveTab("achievements")}
           >
-            Achievements
+            {t("game.tabs.achievements")}
             <span className={styles.badge}>{allAchievements.length}</span>
           </button>
 
@@ -136,7 +139,7 @@ export const GamePage = () => {
               }`}
               onClick={() => setActiveTab("backlog")}
             >
-              Backlog
+              {t("game.tabs.backlog")}
               <span className={`${styles.badge} ${styles.badgeBacklog}`}>
                 {backlog.length}
               </span>
@@ -149,7 +152,7 @@ export const GamePage = () => {
             }`}
             onClick={() => setActiveTab("guide")}
           >
-            Guide
+            {t("game.tabs.guide")}
           </button>
         </div>
       </nav>
@@ -162,7 +165,7 @@ export const GamePage = () => {
         {activeTab === "backlog" && isAuthenticated && (
           <AchievementsList
             items={backlog}
-            emptyMessage="All achievements completed!"
+            emptyMessage={t("game.achievements.empty_backlog")}
           />
         )}
 

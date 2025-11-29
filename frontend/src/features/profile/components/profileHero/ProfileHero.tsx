@@ -2,12 +2,14 @@ import { useState } from "react";
 import type { UserProfileExtended } from "@/types/profile.interface";
 import { FriendsModal } from "./friendsModal/FriendsModal";
 import styles from "./ProfileHero.module.css";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   profile: UserProfileExtended;
 }
 
 export const ProfileHero = ({ profile }: Props) => {
+  const { t } = useTranslation();
   const [rankMode, setRankMode] = useState<"perfect" | "total">("perfect");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -31,17 +33,21 @@ export const ProfileHero = ({ profile }: Props) => {
             <h1 className={styles.userName}>{profile.name}</h1>
             <div className={styles.statsGrid}>
               <div className={styles.statItem}>
-                <span className={styles.statLabel}>Games</span>
+                <span className={styles.statLabel}>{t("profile.games")}</span>
                 <span className={styles.statValue}>{profile.game_count}</span>
               </div>
               <div className={styles.statItem}>
-                <span className={styles.statLabel}>100% Completed</span>
+                <span className={styles.statLabel}>
+                  {t("profile.completed")}
+                </span>
                 <span className={styles.statValue}>
                   {profile.completed_count}
                 </span>
               </div>
               <div className={styles.statItem}>
-                <span className={styles.statLabel}>Achievements</span>
+                <span className={styles.statLabel}>
+                  {t("profile.achievements")}
+                </span>
                 <span className={styles.statValue}>
                   {profile.achievement_count}
                 </span>
@@ -49,10 +55,11 @@ export const ProfileHero = ({ profile }: Props) => {
             </div>
             <div className={styles.globalRanks}>
               <div className={styles.rankBadge}>
-                Rank #100%: <strong>#{profile.rank_perfect || "N/A"}</strong>
+                {t("profile.rank_perfect")}:{" "}
+                <strong>#{profile.rank_perfect || "N/A"}</strong>
               </div>
               <div className={styles.rankBadge}>
-                Rank Achievement:{" "}
+                {t("profile.rank_achievements")}:{" "}
                 <strong>#{profile.rank_achievements || "N/A"}</strong>
               </div>
             </div>
@@ -61,7 +68,7 @@ export const ProfileHero = ({ profile }: Props) => {
 
         <div className={styles.friendsCard}>
           <div className={styles.friendsHeader}>
-            <h3 className={styles.cardTitle}>Friend Rating</h3>
+            <h3 className={styles.cardTitle}>{t("profile.friend_rating")}</h3>
             <div className={styles.toggleContainer}>
               <button
                 className={`${styles.toggleBtn} ${
@@ -99,7 +106,7 @@ export const ProfileHero = ({ profile }: Props) => {
                 <span className={styles.friendName}>
                   {f.user.name}
                   {f.user.id === profile.id && (
-                    <span className={styles.youTag}>YOU</span>
+                    <span className={styles.youTag}>{t("profile.you")}</span>
                   )}
                 </span>
                 <span className={styles.friendScore}>{f.value}</span>
@@ -115,7 +122,7 @@ export const ProfileHero = ({ profile }: Props) => {
             className={styles.moreBtn}
             onClick={() => setIsModalOpen(true)}
           >
-            View Full List
+            {t("profile.view_full")}
           </button>
         </div>
       </section>

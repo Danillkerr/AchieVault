@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import styles from "./SearchForm.module.css";
+import { t } from "i18next";
 
 type SearchVariant = "header" | "hero";
 
@@ -29,18 +30,18 @@ export const SearchForm = ({ variant }: Props) => {
     <form onSubmit={handleSearch} className={formClass}>
       <input
         type="search"
-        placeholder="Search..."
+        placeholder={t("common.search_placeholder")}
         className={styles.searchBar}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
       {variant === "hero" ? (
         <button type="submit" className={styles.searchButton}>
-          Search
+          {t("nav.search")}
         </button>
       ) : (
         <button type="submit" className={styles.hiddenSubmit}>
-          Search
+          {t("common.search_placeholder")}
         </button>
       )}
     </form>

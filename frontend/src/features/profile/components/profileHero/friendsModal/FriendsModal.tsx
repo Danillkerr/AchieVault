@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { FriendRank } from "@/types/profile.interface";
 import { Pagination } from "@/components/ui/Pagination/Pagination";
 import styles from "./FriendsModal.module.css";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   isOpen: boolean;
@@ -11,6 +12,7 @@ interface Props {
 }
 
 export const FriendsModal = ({ isOpen, onClose, friends, mode }: Props) => {
+  const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const itemsPerPage = 5;
 
@@ -25,8 +27,11 @@ export const FriendsModal = ({ isOpen, onClose, friends, mode }: Props) => {
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
         <div className={styles.modalHeader}>
           <h3>
-            Full Friend Ranking (
-            {mode === "perfect" ? "100% Games" : "Achievements"})
+            {t("profile.friends_ranking")} (
+            {mode === "perfect"
+              ? t("profile.completed")
+              : t("profile.achievements")}
+            )
           </h3>
           <button className={styles.closeBtn} onClick={onClose}>
             ×

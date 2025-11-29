@@ -2,6 +2,7 @@ import { GuideViewer } from "../GuideViewer";
 import type { Guide } from "@/types/guide.interface";
 import type { User } from "@/types/user.interface";
 import styles from "./GuideDetails.module.css";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   guide: Guide;
@@ -18,22 +19,23 @@ export const GuideDetails = ({
   onEdit,
   onDelete,
 }: Props) => {
+  const { t } = useTranslation();
   const isMyGuide = currentUser && guide.user.id === Number(currentUser.id);
 
   return (
     <div className={styles.readView}>
       <div className={styles.readHeader}>
         <button className={styles.backBtn} onClick={onBack}>
-          ← Back to guides
+          ← {t("game.guides.back")}
         </button>
 
         {isMyGuide && (
           <div className={styles.cardActions}>
             <button className={styles.editBtnLink} onClick={onEdit}>
-              Edit Guide
+              {t("game.guides.edit")}
             </button>
             <button className={styles.deleteBtnLink} onClick={onDelete}>
-              Delete Guide
+              {t("game.guides.delete")}
             </button>
           </div>
         )}

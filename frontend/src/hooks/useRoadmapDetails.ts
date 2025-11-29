@@ -4,8 +4,10 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 import apiClient from "@/services/apiClient";
 import type { Roadmap, RoadmapStatus } from "@/types/roadmap.interface";
+import { useTranslation } from "react-i18next";
 
 export const useRoadmapDetails = (roadmapId: string | undefined) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -58,7 +60,7 @@ export const useRoadmapDetails = (roadmapId: string | undefined) => {
     },
     onSuccess: (_, variables) => {
       const changesCount = Object.keys(variables).length;
-      toast.success(`Updated ${changesCount} games`);
+      toast.success(t("toasts.roadmap_updated", { count: changesCount }));
       setPendingChanges({});
       setIsEditMode(false);
 
@@ -67,7 +69,7 @@ export const useRoadmapDetails = (roadmapId: string | undefined) => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
     },
     onError: () => {
-      toast.error("Failed to save changes");
+      toast.error(t("toasts.save_error"));
     },
   });
 
@@ -76,11 +78,11 @@ export const useRoadmapDetails = (roadmapId: string | undefined) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
 
-      toast.success("Roadmap deleted");
+      toast.success(t("toasts.roadmap_deleted"));
       navigate("/profile");
     },
     onError: () => {
-      toast.error("Failed to delete roadmap");
+      toast.error(t("toasts.delete_error"));
     },
   });
 
@@ -100,8 +102,7 @@ export const useRoadmapDetails = (roadmapId: string | undefined) => {
   };
 
   const handleDeleteRoadmap = () => {
-    if (!window.confirm("Are you sure you want to delete this roadmap?"))
-      return;
+    if (!window.confirm(t("profile.delete_confirm"))) return;
     deleteMutation.mutate();
   };
 

@@ -14,6 +14,7 @@ import { SyncProvider } from "./context/SyncContext";
 import { Footer } from "./components/layout/Footer/Footer";
 import { TermsPage } from "./features/legal/TermsPage";
 import { PrivacyPage } from "./features/legal/PrivacyPage";
+import "./i18n";
 
 function App() {
   return (

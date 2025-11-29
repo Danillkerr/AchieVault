@@ -188,6 +188,15 @@
   overflow: hidden;
 }
 
+.contentNotice {
+  margin-top: 12px;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+  border-left: 3px solid #f59e0b;
+  padding-left: 10px;
+}
+
 @media (max-width: 768px) {
   .heroContent {
     flex-direction: column;

@@ -5,6 +5,7 @@ import { SearchForm } from "@/components/feedback/SearchForm/SearchForm";
 import { LeaderboardWidget } from "./components/LeaderboardWidget";
 import { TrendingWidget } from "./components/TrendingWidget";
 import { useHomeData } from "@/hooks/useHomeData";
+import { useTranslation } from "react-i18next";
 
 const LoginButton = () => {
   const BACKEND_URL =
@@ -27,6 +28,7 @@ const LoginButton = () => {
 
 export const HomePage = () => {
   const { isAuthenticated, isLoading } = useAuth();
+  const { t } = useTranslation();
   const {
     topPerfectUsers,
     topAchievUsers,
@@ -34,16 +36,14 @@ export const HomePage = () => {
     loading: isDataLoading,
   } = useHomeData();
 
-  if (isLoading) return <ScreenLoader text="Verifying authentication..." />;
-  if (isDataLoading) return <ScreenLoader text="Loading homepage data..." />;
+  if (isLoading) return <ScreenLoader text={t("loading.auth")} />;
+  if (isDataLoading) return <ScreenLoader text={t("loading.home_data")} />;
 
   return (
     <div className={styles.homePage}>
       <section className={styles.heroSection}>
         <h1 className={styles.mainTitle}>AchieVault</h1>
-        <p className={styles.subTitle}>
-          Track your achievements, compete with friends, complete games.
-        </p>
+        <p className={styles.subTitle}>{t("home.subtitle")}</p>
         <div className={styles.actionArea}>
           {isAuthenticated ? <SearchForm variant="hero" /> : <LoginButton />}
         </div>
@@ -53,14 +53,14 @@ export const HomePage = () => {
         <div className={styles.widgetsGrid}>
           <div className={styles.widgetWrapper}>
             <LeaderboardWidget
-              title="Completionists"
+              title={t("home.completionists")}
               users={topPerfectUsers}
               metric="perfect"
             />
           </div>
           <div className={styles.widgetWrapper}>
             <LeaderboardWidget
-              title="Hunters"
+              title={t("home.hunters")}
               users={topAchievUsers}
               metric="total"
             />

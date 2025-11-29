@@ -1,58 +1,45 @@
 import styles from "./LegalPage.module.css";
 import { Link } from "react-router-dom";
+import { useTranslation, Trans } from "react-i18next";
 
 export const PrivacyPage = () => {
+  const { t } = useTranslation();
+
   return (
     <div className={styles.page}>
       <div className={styles.container}>
         <div className={styles.document}>
-          <h1 className={styles.title}>Privacy Policy</h1>
-          <span className={styles.lastUpdated}>
-            Last Updated: November 27, 2025
-          </span>
+          <h1 className={styles.title}>{t("legal.privacy.title")}</h1>
+          <span className={styles.lastUpdated}>{t("legal.last_updated")}</span>
 
           <div className={styles.section}>
-            <h2>1. Information We Collect</h2>
-            <p>
-              AchieVault collects minimal data necessary to provide our
-              achievement tracking service:
-            </p>
+            <h2>{t("legal.privacy.collect_title")}</h2>
+            <p>{t("legal.privacy.collect_text")}</p>
             <ul>
               <li>
-                <strong>Steam Information:</strong> When you sign in via Steam,
-                we receive your Steam ID, Display Name, and Avatar. We also
-                access your public game library and achievement stats via the
-                Steam Web API.
+                <strong>{t("legal.privacy.collect_li1_strong")}</strong>{" "}
+                {t("legal.privacy.collect_li1_text")}
               </li>
               <li>
-                <strong>Usage Data:</strong> We may collect information on how
-                the Service is accessed and used (e.g. page views, roadmaps
-                created).
+                <strong>{t("legal.privacy.collect_li2_strong")}</strong>{" "}
+                {t("legal.privacy.collect_li2_text")}
               </li>
             </ul>
           </div>
 
           <div className={styles.section}>
-            <h2>2. How We Use Your Data</h2>
-            <p>We use the collected data for the following purposes:</p>
+            <h2>{t("legal.privacy.usage_title")}</h2>
+            <p>{t("legal.privacy.usage_text")}</p>
             <ul>
-              <li>
-                To provide and maintain our Service (tracking your progress).
-              </li>
-              <li>
-                To allow you to participate in interactive features
-                (Leaderboards, Friend Comparisons).
-              </li>
-              <li>To generate personalized Roadmaps and recommendations.</li>
+              <li>{t("legal.privacy.usage_li1")}</li>
+              <li>{t("legal.privacy.usage_li2")}</li>
+              <li>{t("legal.privacy.usage_li3")}</li>
             </ul>
           </div>
 
           <div className={styles.section}>
-            <h2>3. Third-Party Services</h2>
-            <p>
-              We use third-party services to function. Please review their
-              privacy policies:
-            </p>
+            <h2>{t("legal.privacy.third_party_title")}</h2>
+            <p>{t("legal.privacy.third_party_text")}</p>
             <ul>
               <li>
                 <a
@@ -78,33 +65,22 @@ export const PrivacyPage = () => {
           </div>
 
           <div className={styles.section}>
-            <h2>4. Data Retention & Deletion</h2>
+            <h2>{t("legal.privacy.retention_title")}</h2>
             <p>
-              We retain your data only as long as your account is active. You
-              have the right to delete your account at any time via the{" "}
-              <strong>Profile Settings</strong>.
+              <Trans i18nKey="legal.privacy.retention_text1" />
             </p>
-            <p>
-              Upon deletion, all your personal data stored on our servers
-              (including roadmaps and ranking history) will be permanently
-              removed. Note that we cannot delete data stored on Steam's
-              servers.
-            </p>
+            <p>{t("legal.privacy.retention_text2")}</p>
           </div>
 
           <div className={styles.section}>
-            <h2>5. Cookies</h2>
-            <p>
-              We use cookies and similar tracking technologies to track the
-              activity on our Service and hold certain information (e.g. keeping
-              you logged in).
-            </p>
+            <h2>{t("legal.privacy.cookies_title")}</h2>
+            <p>{t("legal.privacy.cookies_text")}</p>
           </div>
 
           <div className={styles.section}>
             <p>
               <Link to="/" className={styles.link}>
-                &larr; Back to Home
+                &larr; {t("legal.back_home")}
               </Link>
             </p>
           </div>

@@ -1,6 +1,7 @@
 import { BaseWidget } from "@/components/widgets/BaseWidget";
 import styles from "./Widgets.module.css";
 import type { LeaderboardUsers, LeaderboardUser } from "@/types/user.interface";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   title: string;
@@ -9,6 +10,8 @@ interface Props {
 }
 
 export const LeaderboardWidget = ({ title, users, metric }: Props) => {
+  const { t } = useTranslation();
+
   const renderMetric = (user: LeaderboardUser) => {
     if (metric === "perfect") {
       return <span>{user.user.completed_count}</span>;
@@ -24,9 +27,9 @@ export const LeaderboardWidget = ({ title, users, metric }: Props) => {
     <BaseWidget title={title}>
       <div className={styles.tableHeader}>
         <span className={styles.colRank}>#</span>
-        <span className={styles.colUser}>User</span>
+        <span className={styles.colUser}>{t("common.user")}</span>
         <span className={styles.colStat}>
-          {metric === "perfect" ? "100%" : "Total"}
+          {metric === "perfect" ? t("profile.total") : t("profile.total")}
         </span>
       </div>
 
