@@ -1,5 +1,5 @@
 import { Injectable, Logger, Inject } from '@nestjs/common';
-import { User } from 'src/core/entities/user.entity';
+import { User } from 'src/features/users/entities/user.entity';
 import { InjectQueue } from '@nestjs/bull';
 import type { Queue } from 'bull';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';

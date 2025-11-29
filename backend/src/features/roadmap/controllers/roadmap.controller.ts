@@ -13,7 +13,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { User } from 'src/core/entities/user.entity';
+import { User } from 'src/features/users/entities/user.entity';
 import { RoadmapService } from '../services/roadmap.service';
 import { CreateRoadmapDto } from '../dto/create-roadmap.dto';
 import { UpdateGameStatusDto } from '../dto/update-game-status.dto';

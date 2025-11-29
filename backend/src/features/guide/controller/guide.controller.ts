@@ -15,7 +15,7 @@ import { CreateGuideRequestDto } from '../dto/create-guide.dto';
 import { GetGuidesQueryDto } from '../dto/get-guides.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateGuideDto } from '../dto/update-guide.dto';
-import { User } from '../../../core/entities/user.entity';
+import { User } from '../../users/entities/user.entity';
 import { Delete } from '@nestjs/common/decorators/http/request-mapping.decorator';
 
 @Controller('guides')

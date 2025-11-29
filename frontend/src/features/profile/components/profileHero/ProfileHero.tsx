@@ -49,10 +49,11 @@ export const ProfileHero = ({ profile }: Props) => {
             </div>
             <div className={styles.globalRanks}>
               <div className={styles.rankBadge}>
-                Rank #100%: <strong>#{profile.rank_perfect}</strong>
+                Rank #100%: <strong>#{profile.rank_perfect || "N/A"}</strong>
               </div>
               <div className={styles.rankBadge}>
-                Rank Achievement: <strong>#{profile.rank_achievements}</strong>
+                Rank Achievement:{" "}
+                <strong>#{profile.rank_achievements || "N/A"}</strong>
               </div>
             </div>
           </div>

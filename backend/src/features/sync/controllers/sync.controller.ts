@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { SyncService } from '../services/sync.service';
 import { AuthGuard } from '@nestjs/passport';
-import { User } from 'src/core/entities/user.entity';
+import { User } from 'src/features/users/entities/user.entity';
 import { HttpStatus, HttpCode } from '@nestjs/common';
 
 @Controller('sync')

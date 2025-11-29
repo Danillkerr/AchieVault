@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ISyncStep } from '../../sync/interfaces/sync-step.interface';
-import { User } from '../../../core/entities/user.entity';
+import { User } from '../../users/entities/user.entity';
 import { RoadmapService } from '../../roadmap/services/roadmap.service';
 
 @Injectable()

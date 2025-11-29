@@ -8,7 +8,7 @@ import {
   BaseEntity,
   UpdateDateColumn,
 } from 'typeorm';
-import { User } from '../../../core/entities/user.entity';
+import { User } from './user.entity';
 import { Game } from '../../game/entities/game.entity';
 
 @Entity('User_Game')

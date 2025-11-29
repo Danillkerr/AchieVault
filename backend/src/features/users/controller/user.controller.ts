@@ -5,7 +5,7 @@ import { UseGuards } from '@nestjs/common/decorators/core/use-guards.decorator';
 import { Delete } from '@nestjs/common/decorators/http/request-mapping.decorator';
 import { HttpCode } from '@nestjs/common/decorators/http/http-code.decorator';
 import { Req } from '@nestjs/common/decorators/http/route-params.decorator';
-import { User } from '../../../core/entities/user.entity';
+import { User } from '../entities/user.entity';
 
 @Controller('users')
 export class UserController {

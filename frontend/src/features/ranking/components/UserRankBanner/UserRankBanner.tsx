@@ -45,7 +45,9 @@ export const UserRankBanner = () => {
             <span className={styles.statTitle}>Completionist Rank</span>
           </div>
           <div className={styles.statData}>
-            <span className={styles.rankValue}>#{ranks.rank_completed}</span>
+            <span className={styles.rankValue}>
+              #{ranks.rank_completed || "N/A"}
+            </span>
             <span className={styles.realValue}>
               ({user.completed_count} games)
             </span>
@@ -59,7 +61,9 @@ export const UserRankBanner = () => {
             <span className={styles.statTitle}>Hunter Rank</span>
           </div>
           <div className={styles.statData}>
-            <span className={styles.rankValue}>#{ranks.rank_achievement}</span>
+            <span className={styles.rankValue}>
+              #{ranks.rank_achievement || "N/A"}
+            </span>
             <span className={styles.realValue}>
               ({user.achievement_count} achvs)
             </span>

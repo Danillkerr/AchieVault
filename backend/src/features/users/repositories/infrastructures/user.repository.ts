@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, ILike, In, Repository } from 'typeorm';
-import { User } from '../../../../core/entities/user.entity';
+import { User } from '../../entities/user.entity';
 import { UserRepository } from '../abstracts/user.repository.abstract';
 import { ISteamProfile } from '../../interfaces/steam-profile.interface';
 import { BaseTypeOrmRepository } from '../../../../core/repositories/base.repository';

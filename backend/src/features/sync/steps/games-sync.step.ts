@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ISyncStep } from '../interfaces/sync-step.interface';
-import { User } from '../../../core/entities/user.entity';
+import { User } from '../../users/entities/user.entity';
 import { GameService } from '../../game/service/game.service';
 import { GameEnrichmentService } from '../services/game-enrichment.service';
 import { UserGameService } from '../../users/services/user-game.service';

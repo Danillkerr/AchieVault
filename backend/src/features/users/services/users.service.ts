@@ -1,5 +1,5 @@
 import { DeepPartial, EntityManager } from 'typeorm';
-import { User } from '../../../core/entities/user.entity';
+import { User } from '../entities/user.entity';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import {
   IProfileFromSteam,

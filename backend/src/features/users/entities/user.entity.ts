@@ -8,7 +8,7 @@ import {
   OneToMany,
   BaseEntity,
 } from 'typeorm';
-import { UserGame } from '../../features/users/entities/user-game.entity';
+import { UserGame } from './user-game.entity';
 
 @Entity('User')
 export class User extends BaseEntity {

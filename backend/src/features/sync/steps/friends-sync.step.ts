@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { ISyncStep } from '../interfaces/sync-step.interface';
-import { User } from '../../../core/entities/user.entity';
+import { User } from '../../users/entities/user.entity';
 import { FriendListService } from '../../users/services/friend-list.service';
 import { ISocialSource } from 'src/core/repositories/interfaces/social-source.interface';
 

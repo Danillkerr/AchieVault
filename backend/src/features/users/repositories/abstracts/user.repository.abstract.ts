@@ -1,4 +1,4 @@
-import { User } from '../../../../core/entities/user.entity';
+import { User } from '../../entities/user.entity';
 import { DeepPartial, EntityManager } from 'typeorm';
 import { ISteamProfile } from '../../interfaces/steam-profile.interface';
 
