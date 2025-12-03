@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Inject,
   Injectable,
@@ -86,6 +87,11 @@ export class RoadmapService {
   }
 
   async createRoadmap(userId: number, dto: CreateRoadmapDto) {
+    const existing = await this.roadmapRepo.findLatestByUserId(userId);
+
+    if (existing) {
+      throw new BadRequestException('You already have a roadmap created.');
+    }
     const stats = await this.gameService.getRoadmapStats(dto.gameIds);
 
     const gamesMetricsRaw =

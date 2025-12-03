@@ -35,7 +35,9 @@ export class RecommendationService {
 
     const { cMin, cMax, tMin, tMax } = this.findMinMaxValues(games);
 
-    const scoredGames = games.map((game) => {
+    let bestGame: GameScoreResult | null = null;
+
+    for (const game of games) {
       const P = game.unlockedCount / game.achievementsCount;
 
       const Cnorm = this.normalizeLog(
@@ -61,7 +63,7 @@ export class RecommendationService {
 
       const IP = numerator / denominator;
 
-      return {
+      const currentResult: GameScoreResult = {
         gameId: game.gameId,
         title: game.title,
         score: IP,
@@ -72,11 +74,13 @@ export class RecommendationService {
           timeFactor: Kt,
         },
       };
-    });
 
-    scoredGames.sort((a, b) => b.score - a.score);
+      if (!bestGame || currentResult.score > bestGame.score) {
+        bestGame = currentResult;
+      }
+    }
 
-    return scoredGames[0];
+    return bestGame;
   }
 
   private findMinMaxValues(games: GameMetricData[]) {
